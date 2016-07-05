@@ -44,7 +44,8 @@ void graph_destroy(graph_t* g)
 	for(i=0; i<g->V; i++){
 		queue_destroy(&g->adj[i]);
 	}
-
+	
+	free(g->adj);
 	free(g->label);
 	g->V = g->E = 0;
 }
