@@ -1,0 +1,22 @@
+[ ] queue
+	[x] enqueue
+	[x] dequeue
+	[x] create
+	[x] destroy
+	[ ] remove
+[ ] stack
+[ ] trie
+[ ] red-black tree
+[ ] graph
+	[x] create
+	[x] destroy
+	[x] add edge
+	[x] add label
+	[x] set label
+	[ ] add vertex
+	[ ] remove edge
+	[ ] remove vertex
+	[ ] algorithms
+		[ ] depth first search 
+		[ ] breadth first search
+	
