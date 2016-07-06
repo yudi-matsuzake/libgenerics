@@ -21,5 +21,6 @@ void queue_create(struct queue_t* q, size_t member_size);
 void queue_enqueue(struct queue_t* q, void* e);
 void* queue_dequeue(struct queue_t* q);
 void queue_destroy(struct queue_t* q);
+void* queue_remove(struct queue_t* q, struct qnode_t* node);
 
 #endif // __QUEUE_T_H__

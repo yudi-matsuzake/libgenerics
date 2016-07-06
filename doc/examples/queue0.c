@@ -10,7 +10,7 @@ int main()
 	srand(time(NULL));
 
 	int i;
-	queue_t q, d, c;
+	queue_t q;
 	queue_create(&q, sizeof(int));
 
 	for( i=0; i<N; i++ ){

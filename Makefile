@@ -1,5 +1,5 @@
 GCC=gcc
-GCC_FLAGS=-Wall -Wextra
+GCC_FLAGS=-Wall -Wextra -O3
 OBJ=build/obj
 
 INCLUDE=include
@@ -13,21 +13,21 @@ EXAMPLES_BIN=build/examples
 
 TEST_PATH=build/test
 
-generics-obj: $(SRC) $(HEADER)
+$(OBJ): $(SRC) $(HEADER)
 	@[ -d $(OBJ) ] || mkdir -p $(OBJ)
-	$(GCC) -c $(SRC) -I $(INCLUDE)
+	$(GCC) -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
 	mv *.o $(OBJ)
 
-examples: generics-obj
+$(EXAMPLES_BIN): $(OBJ)
 	@[ -d $(EXAMPLES_BIN) ] || mkdir -p $(EXAMPLES_BIN)
 	@for example in $(EXAMPLES_PATH)/*.c ;\
 	do \
 		bin=$$(basename $${example}) ;\
 		echo $(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} -I $(INCLUDE) $(OBJ)/*.o ;\
-		$(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} -I $(INCLUDE) $(OBJ)/*.o ;\
+		$(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} -I $(INCLUDE) $(OBJ)/*.o $(GCC_FLAGS) ;\
 	done
 
-test: examples
+$(TEST_PATH): $(EXAMPLES_BIN)
 	@[ -d  $(TEST_PATH) ] || mkdir -p $(TEST_PATH)
 	@for bin in $(EXAMPLES_BIN)/* ;\
 	do \
@@ -35,3 +35,8 @@ test: examples
 		echo valgrind ./$${bin} '1>' $(TEST_PATH)/$${test}_output.txt '2>' $(TEST_PATH)/$${test}_valgrind.txt ;\
 		valgrind ./$${bin} 1> $(TEST_PATH)/$${test}_output.txt 2> $(TEST_PATH)/$${test}_valgrind.txt ;\
 	done
+	@for txt in $(TEST_PATH)/*.txt ;\
+	do \
+		echo "$${txt}--------------------------------------" ;\
+		cat "$${txt}" ;\
+	done | less

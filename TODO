@@ -1,16 +1,28 @@
-[ ] queue
+[x] queue
 	[x] enqueue
 	[x] dequeue
 	[x] create
 	[x] destroy
-	[ ] remove
+	[x] remove
 [ ] stack
-[ ] trie
+	[x] push
+	[x] pop
+	[x] create
+	[x] destroy
+	[ ] remove
+[x] trie
+	[x] create
+	[x] destroy
+	[x] add element
+	[x] remove element
+	[x] get element
+	[x] set element
 [ ] red-black tree
 [ ] graph
 	[x] create
 	[x] destroy
-	[x] add edge
+	[x] add edge by index
+	[ ] add edge by labels
 	[x] add label
 	[x] set label
 	[ ] add vertex
@@ -19,4 +31,6 @@
 	[ ] algorithms
 		[ ] depth first search 
 		[ ] breadth first search
+		[ ] euclidean path
+		[ ] dijkstra algorithm
 	

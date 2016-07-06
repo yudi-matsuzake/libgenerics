@@ -50,6 +50,25 @@ void* queue_dequeue(struct queue_t* q)
 	return ptr;
 }
 
+void* queue_remove(struct queue_t* q, struct qnode_t* node)
+{
+	if(!q || !node) return NULL;
+	if(node->prev)
+		node->prev->next = node->next;
+	else
+		q->head = node->next;
+
+	if(node->next)
+		node->next->prev = node->prev;
+	else
+		q->tail = node->prev;
+
+	q->size--;
+	node->next = node->prev = NULL;
+	void* ptr = node->data;
+	free(node);
+	return ptr;
+}
 
 void queue_destroy(struct queue_t* q)
 {
