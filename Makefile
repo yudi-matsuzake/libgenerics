@@ -15,6 +15,8 @@ TEST_PATH=build/test
 
 DOXYGEN_PATH=doc/doxygen
 
+DOC_PDF=doc/doc.pdf
+
 $(OBJ): $(SRC) $(HEADER)
 	@[ -d $(OBJ) ] || mkdir -p $(OBJ)
 	$(GCC) -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
@@ -45,3 +47,6 @@ $(TEST_PATH): $(EXAMPLES_BIN)
 
 $(DOXYGEN_PATH): .doxygen
 	doxygen .doxygen
+
+$(DOC_PDF): $(DOXYGEN_PATH)
+	cp $(DOXYGEN_PATH)/latex/refman.pdf $(DOC_PDF)
