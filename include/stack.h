@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+/** node of a stack
+  */
 typedef struct snode_t{
 	struct snode_t* next;
 	struct snode_t* prev;
@@ -10,6 +12,8 @@ typedef struct snode_t{
 	void* data;
 }snode_t;
 
+/** represents the stack structure.
+  */
 typedef struct stack_t{
 	size_t size;
 	size_t member_size;

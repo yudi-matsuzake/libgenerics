@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/** queue node.
+  *
+  */
 typedef struct qnode_t{
 	struct qnode_t* next;
 	struct qnode_t* prev;
@@ -10,6 +13,8 @@ typedef struct qnode_t{
 	void* data;
 }qnode_t;
 
+/** Represents a queue structure.
+  */
 typedef struct queue_t{
 	size_t size;
 	size_t member_size;

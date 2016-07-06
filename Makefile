@@ -13,6 +13,8 @@ EXAMPLES_BIN=build/examples
 
 TEST_PATH=build/test
 
+DOXYGEN_PATH=doc/doxygen
+
 $(OBJ): $(SRC) $(HEADER)
 	@[ -d $(OBJ) ] || mkdir -p $(OBJ)
 	$(GCC) -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
@@ -40,3 +42,6 @@ $(TEST_PATH): $(EXAMPLES_BIN)
 		echo "$${txt}--------------------------------------" ;\
 		cat "$${txt}" ;\
 	done | less
+
+$(DOXYGEN_PATH): .doxygen
+	doxygen .doxygen

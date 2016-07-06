@@ -1,5 +1,13 @@
 #include "stack.h"
 
+/** Creates a stack and populates the previous
+  * allocated structure pointed by `s`;
+  *
+  * @param s		pointer to a stack structure;
+  * @param member_size	size of the elements that will be
+  * 			indexed by `s`
+  *
+  */
 void stack_create(struct stack_t* s, size_t member_size)
 {
 	if(!s) return;
@@ -9,6 +17,13 @@ void stack_create(struct stack_t* s, size_t member_size)
 	s->head = NULL;
 }
 
+/** Add the element `e` in the beginning of the stack `s`.
+  *
+  * @param s		pointer to a stack structure;
+  * @param e	pointer to the element that will be indexed
+  * 		by s.
+  *
+  */
 void stack_push(struct stack_t* s, void* e)
 {
 	if(!s) return;
@@ -24,6 +39,12 @@ void stack_push(struct stack_t* s, void* e)
 	s->size++;
 }
 
+/** Pops the first element of the stack `s`.
+  *
+  * @param s		pointer to a stack structure;
+  * 
+  * @return a pointer to the element that must be freed;
+  */
 void* stack_pop (struct stack_t* s)
 {
 	if(!s || !s->head) return NULL;
@@ -42,6 +63,13 @@ void* stack_pop (struct stack_t* s)
 }
 
 
+/** Deallocates the nodes of the structure pointed
+  * by `s`. This function WILL NOT deallocate the
+  * pointer `q`.
+  *
+  * @param s		pointer to a stack structure;
+  *
+  */
 void stack_destroy(struct stack_t* s)
 {
 	if(!s) return;

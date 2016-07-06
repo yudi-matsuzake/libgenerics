@@ -61,6 +61,8 @@ tnode_t* node_at ( struct trie_t* t, void* string, size_t size)
   */
 void trie_create (struct trie_t* t, size_t member_size)
 {
+	if(!t) return;
+
 	t->size = 0;
 	t->member_size = member_size;
 	t->root.value = NULL;
@@ -120,6 +122,7 @@ void trie_destroy (struct trie_t* t)
   */
 void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
+	if(!t || !string || !elem) return;
 	struct tnode_t* node = node_at_and_allocate(t, string, size);
 	node->value = malloc(sizeof(t->member_size));
 	memcpy(node->value, elem, t->member_size);
@@ -136,6 +139,8 @@ void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
   */
 void* trie_remove_element (struct trie_t* t, void* string, size_t size)
 {
+	if(!t || !string) return NULL;
+
 	struct tnode_t* node = node_at(t, string, size);
 	if(!node) return NULL;
 
@@ -157,6 +162,8 @@ void* trie_remove_element (struct trie_t* t, void* string, size_t size)
   */
 void* trie_get_element (struct trie_t* t, void* string, size_t size)
 {
+	if(!t || !string) return NULL;
+		
 	return node_at(t, string, size)->value;
 }
 
@@ -171,6 +178,8 @@ void* trie_get_element (struct trie_t* t, void* string, size_t size)
 void trie_set_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
 
+	if(!t || !string) return;
+		
 	struct tnode_t* node = node_at(t, string, size);
 	if(node){
 		free(node->value);

@@ -6,11 +6,15 @@
 
 #define NBYTE (0x100)
 
+/** node of a trie_t element.
+  */
 typedef struct tnode_t {
 	void* value;
 	struct tnode_t* children[NBYTE];
 } tnode_t;
 
+/** Represents the trie structure.
+  */
 typedef struct trie_t {
 	size_t size;
 	size_t member_size;

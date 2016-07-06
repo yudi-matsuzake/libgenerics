@@ -4,6 +4,8 @@
 #include <assert.h>
 #include "queue.h"
 
+/** Graph structure and elements.
+  */
 typedef struct graph_t{
 	size_t V;
 	size_t E;

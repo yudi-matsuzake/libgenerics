@@ -1,5 +1,13 @@
 #include "queue.h"
 
+/** Creates a queue and populates the previous
+  * allocated structure pointed by `q`;
+  *
+  * @param q		pointer to a queue structure;
+  * @param member_size	size of the elements that will be
+  * 			indexed by `q`
+  *
+  */
 void queue_create(struct queue_t* q, size_t member_size)
 {
 	if(!q) return;
@@ -10,6 +18,14 @@ void queue_create(struct queue_t* q, size_t member_size)
 	q->tail = NULL;
 }
 
+/** Enqueues the element pointed by `e` in the
+  * queue `q`.
+  *
+  * @param q	pointer to a queue structure;
+  * @param e	pointer to the element that will be indexed
+  * 		by q.
+  *
+  */
 void queue_enqueue(struct queue_t* q, void* e)
 {
 	if(!q) return;
@@ -31,6 +47,12 @@ void queue_enqueue(struct queue_t* q, void* e)
 	q->size++;
 }
 
+/** Dequeues the first element of the queue `q`
+  *
+  * @param q	pointer to a queue structure;
+  * 
+  * @return a pointer to the element that must be freed;
+  */
 void* queue_dequeue(struct queue_t* q)
 {
 	if(!q || !q->head) return NULL;
@@ -50,6 +72,14 @@ void* queue_dequeue(struct queue_t* q)
 	return ptr;
 }
 
+/** Removes the element `node` of the queue `q`.
+  * 
+  * @param q	pointer to a queue structure;
+  * @param node	element to be removed from the queue
+  *
+  * @return a pointer to the value of the node just removed
+  *
+  */
 void* queue_remove(struct queue_t* q, struct qnode_t* node)
 {
 	if(!q || !node) return NULL;
@@ -70,6 +100,12 @@ void* queue_remove(struct queue_t* q, struct qnode_t* node)
 	return ptr;
 }
 
+/** Deallocate the nodes of the queue q.
+  * This function WILL NOT deallocate the pointer q.
+  *
+  * @param q	pointer to a queue structure;
+  *
+  */
 void queue_destroy(struct queue_t* q)
 {
 	if(!q) return;
