@@ -1,5 +1,5 @@
 GCC=gcc
-GCC_FLAGS=-Wall -Wextra -O3
+GCC_FLAGS=-Wall -Wextra -O3 -lgenerics
 OBJ=build/obj
 
 INCLUDE=include
@@ -17,6 +17,17 @@ DOXYGEN_PATH=doc/doxygen
 
 DOC_PDF=doc/doc.pdf
 
+LIB_STATIC_PATH=build/lib/static
+LIB_STATIC=$(LIB_STATIC_PATH)/libgenerics.a
+LIB_SHARED_PATH=build/lib/shared
+LIB_SHARED=$(LIB_SHARED_PATH)/libgenerics.so
+OBJ_SHARED=build/obj-shared
+
+INSTALL_ARTEFACT_PATH=/usr/lib
+INSTALL_INCLUDE_PATH=/usr/include/generics
+
+all: $(LIB_STATIC) $(LIB_SHARED)
+
 $(OBJ): $(SRC) $(HEADER)
 	@[ -d $(OBJ) ] || mkdir -p $(OBJ)
 	$(GCC) -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
@@ -27,8 +38,8 @@ $(EXAMPLES_BIN): $(OBJ)
 	@for example in $(EXAMPLES_PATH)/*.c ;\
 	do \
 		bin=$$(basename $${example}) ;\
-		echo $(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} -I $(INCLUDE) $(OBJ)/*.o ;\
-		$(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} -I $(INCLUDE) $(OBJ)/*.o $(GCC_FLAGS) ;\
+		echo $(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} $(GCC_FLAGS) ;\
+		$(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} $(GCC_FLAGS) ;\
 	done
 
 $(TEST_PATH): $(EXAMPLES_BIN)
@@ -50,3 +61,25 @@ $(DOXYGEN_PATH): .doxygen
 
 $(DOC_PDF): $(DOXYGEN_PATH)
 	cp $(DOXYGEN_PATH)/latex/refman.pdf $(DOC_PDF)
+
+$(LIB_STATIC): $(OBJ) $(OBJ)/*.o
+	@[ -d $(LIB_STATIC_PATH) ] || mkdir -p $(LIB_STATIC_PATH)
+	ar -cvq $(LIB_STATIC) $(OBJ)/*.o
+	
+$(OBJ_SHARED): $(SRC) $(HEADER)
+	@[ -d $(OBJ_SHARED) ] || mkdir -p $(OBJ_SHARED)
+	$(GCC) -fPIC -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
+	mv *.o $(OBJ_SHARED)
+
+$(LIB_SHARED): $(OBJ_SHARED)
+	@[ -d $(LIB_SHARED_PATH) ] || mkdir -p $(LIB_SHARED_PATH)
+	gcc -shared -Wl,-soname,libgenerics.so -o $(LIB_SHARED) $(OBJ_SHARED)/*.o
+
+install: $(LIB_STATIC) $(LIB_SHARED)
+	@[ -d $(INSTALL_INCLUDE_PATH) ] || mkdir -p $(INSTALL_INCLUDE_PATH)
+	cp $(HEADER) $(INSTALL_INCLUDE_PATH)
+	cp $(LIB_SHARED) $(LIB_STATIC) $(INSTALL_ARTEFACT_PATH)
+
+uninstall:
+	-rm -vr $(INSTALL_INCLUDE_PATH)
+	rm -v $(INSTALL_ARTEFACT_PATH)/libgenerics.a $(INSTALL_ARTEFACT_PATH)/libgenerics.so
