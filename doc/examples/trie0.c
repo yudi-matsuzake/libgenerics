@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "trie.h"
+#include <generics/trie.h>
 
 int main()
 {

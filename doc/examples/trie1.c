@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "trie.h"
-#include "queue.h"
+#include <generics/trie.h>
+#include <generics/queue.h>
 
 void print_lexicography_node(struct tnode_t *node, struct queue_t* q)
 {

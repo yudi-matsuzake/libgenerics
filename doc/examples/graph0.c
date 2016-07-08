@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "graph.h"
+#include <generics/graph.h>
 
 #define N 4
 

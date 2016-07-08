@@ -36,6 +36,26 @@ int main()
 
 The doxygen documentation is available ![here](https://github.com/yudi-matsuzake/libgenerics/blob/master/doc/doc.pdf).
 
+Installation
+------------
+
+```shell
+$ make
+$ sudo make install
+```
+
+To make sure everything went well you may compile the examples:
+
+```
+$ make build/examples
+```
+
+Uninstall:
+
+```
+$ make uninstall
+```
+
 Checklist
 ---------
 

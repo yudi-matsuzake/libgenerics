@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "queue.h"
+#include <generics/queue.h>
 
 #define N 10
 
