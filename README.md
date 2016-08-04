@@ -114,3 +114,10 @@ Checklist
 		- [ ] breadth first search
 		- [ ] euclidean path
 		- [ ] dijkstra algorithm
+- [x] vector
+	- [x] create
+	- [x] destroy
+	- [x] resize
+	- [x] add
+	- [x] at
+	- [x] set_elem_at

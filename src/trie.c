@@ -26,6 +26,7 @@
  */
 tnode_t* node_at_and_allocate ( struct trie_t* t, void* string, size_t size)
 {
+	if(!t || !string) return NULL;
 	struct tnode_t* node = &t->root;
 	size_t i;
 	char *ptr = string;
@@ -56,6 +57,7 @@ tnode_t* node_at_and_allocate ( struct trie_t* t, void* string, size_t size)
  */
 tnode_t* node_at ( struct trie_t* t, void* string, size_t size)
 {
+	if(!t || !string) return NULL;
 	struct tnode_t* node = &t->root;
 	size_t i;
 	char *ptr = string;
