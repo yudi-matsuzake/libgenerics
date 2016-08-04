@@ -15,6 +15,8 @@ TEST_PATH=build/test
 
 DOXYGEN_PATH=doc/doxygen
 
+DOXYGEN_REFMAN=$(DOXYGEN_PATH)/latex/refman.pdf
+
 DOC_PDF=doc/doc.pdf
 
 LIB_STATIC_PATH=build/lib/static
@@ -56,10 +58,13 @@ $(TEST_PATH): $(EXAMPLES_BIN)
 		cat "$${txt}" ;\
 	done | less
 
-$(DOXYGEN_PATH): .doxygen
+$(DOXYGEN_PATH): .doxygen $(SRC) $(HEADER)
 	doxygen .doxygen
 
-$(DOC_PDF): $(DOXYGEN_PATH)
+$(DOXYGEN_REFMAN): $(DOXYGEN_PATH)
+	cd $(DOXYGEN_PATH)/latex && make
+
+$(DOC_PDF): $(DOXYGEN_REFMAN)
 	cp $(DOXYGEN_PATH)/latex/refman.pdf $(DOC_PDF)
 
 $(LIB_STATIC): $(OBJ) $(OBJ)/*.o
