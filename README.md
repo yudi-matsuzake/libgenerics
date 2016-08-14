@@ -79,6 +79,7 @@ For more information, please refer to [<http://unlicense.org/>](http://unlicense
 Checklist
 ---------
 
+
 - [x] queue
 	- [x] enqueue
 	- [x] dequeue
@@ -121,3 +122,4 @@ Checklist
 	- [x] add
 	- [x] at
 	- [x] set_elem_at
+- [ ] priority queue
