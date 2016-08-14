@@ -46,8 +46,8 @@ void queue_create(struct queue_t* q, size_t member_size)
   */
 void queue_enqueue(struct queue_t* q, void* e)
 {
-	if(!q) return;
-
+	if(!q || !e) return;
+	
 	struct qnode_t* new_node = (qnode_t*) malloc(sizeof(qnode_t));
 	new_node->data = malloc(sizeof(q->member_size));
 	new_node->next = new_node->prev = NULL;

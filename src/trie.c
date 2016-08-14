@@ -24,7 +24,10 @@
  *
  * @return the node mapped with string and allocate
  */
-tnode_t* node_at_and_allocate ( struct trie_t* t, void* string, size_t size)
+tnode_t* trie_get_node_or_allocate (
+		struct trie_t* t,
+		void* string,
+		size_t size)
 {
 	if(!t || !string) return NULL;
 	struct tnode_t* node = &t->root;
@@ -63,7 +66,8 @@ tnode_t* node_at ( struct trie_t* t, void* string, size_t size)
 	char *ptr = string;
 
 	for(i=0; i<size; i++){
-		int byte = (int)ptr[i];
+		unsigned char byte = (unsigned char)ptr[i];
+
 		if ( node->children[byte] == NULL )
 			return NULL;
 
@@ -143,8 +147,11 @@ void trie_destroy (struct trie_t* t)
 void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
 	if(!t || !string || !elem) return;
-	struct tnode_t* node = node_at_and_allocate(t, string, size);
-	node->value = malloc(sizeof(t->member_size));
+	struct tnode_t* node = trie_get_node_or_allocate(t, string, size);
+
+	if(node->value == NULL)
+		node->value = malloc(sizeof(t->member_size));
+
 	memcpy(node->value, elem, t->member_size);
 	t->size++;
 }
@@ -172,7 +179,8 @@ void* trie_remove_element (struct trie_t* t, void* string, size_t size)
 	return removed_value;
 }
 
-/** Returns the element mapped by `string`.
+/** Returns the element mapped by `string`. If the map does not 
+  * exist, returns NULL.
   *
   * @param t		pointer to the structure;
   * @param string	pointer to the string of bytes to map elem;
@@ -182,9 +190,15 @@ void* trie_remove_element (struct trie_t* t, void* string, size_t size)
   */
 void* trie_get_element (struct trie_t* t, void* string, size_t size)
 {
-	if(!t || !string) return NULL;
-		
-	return node_at(t, string, size)->value;
+	if(!t || !string)
+		return NULL;
+
+	struct tnode_t* node = node_at(t, string, size);
+
+	if(node == NULL)
+		return NULL;
+
+	return node->value;
 }
 
 /** Sets the value mapped by `string`.

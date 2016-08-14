@@ -45,5 +45,6 @@ void trie_add_element(struct trie_t* t, void* string, size_t size, void* elem);
 void* trie_remove_element(struct trie_t* t, void* string, size_t size);
 void* trie_get_element(struct trie_t* t, void* string, size_t size);
 void trie_set_element(struct trie_t* t, void* string, size_t size, void* elem);
+tnode_t* trie_get_node_or_allocate ( struct trie_t* t, void* string, size_t size);
 
 #endif // __TRIE_H__
