@@ -150,7 +150,7 @@ void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
 	struct tnode_t* node = trie_get_node_or_allocate(t, string, size);
 
 	if(node->value == NULL)
-		node->value = malloc(sizeof(t->member_size));
+		node->value = malloc(t->member_size);
 
 	memcpy(node->value, elem, t->member_size);
 	t->size++;

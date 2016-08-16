@@ -49,7 +49,7 @@ void queue_enqueue(struct queue_t* q, void* e)
 	if(!q || !e) return;
 	
 	struct qnode_t* new_node = (qnode_t*) malloc(sizeof(qnode_t));
-	new_node->data = malloc(sizeof(q->member_size));
+	new_node->data = malloc(q->member_size);
 	new_node->next = new_node->prev = NULL;
 	memcpy(new_node->data, e, q->member_size);
 

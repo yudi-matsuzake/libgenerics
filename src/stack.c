@@ -47,7 +47,7 @@ void stack_push(struct stack_t* s, void* e)
 	if(!s) return;
 
 	struct snode_t* new_node = (snode_t*) malloc(sizeof(snode_t));
-	new_node->data = malloc(sizeof(s->member_size));
+	new_node->data = malloc(s->member_size);
 	new_node->prev = NULL;
 	new_node->next = s->head;
 	memcpy(new_node->data, e, s->member_size);
