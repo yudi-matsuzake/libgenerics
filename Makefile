@@ -1,90 +1,73 @@
+# --VARIABLES----------------------------------------------
+# gcc
 GCC=gcc
-GCC_FLAGS=-Wall -Wextra -O3 -lgenerics
-OBJ=build/obj
+GCC_FLAGS=-Wall -Wextra -O3
 
+# paths and files
+BUILD_PATH=build
+LIB_PATH=$(BUILD_PATH)/lib
 INCLUDE=include
 SRC_PATH=src
 SRC=$(wildcard $(SRC_PATH)/*.c)
 HEADER=$(wildcard $(INCLUDE)/*.h)
 
-EXAMPLES_PATH=doc/examples
-EXAMPLES=$(wildcard $(EXAMPLES_PATH)/*.c)
-EXAMPLES_BIN=build/examples
+LIB_STATIC_PATH=$(LIB_PATH)/static
+LIB_SHARED_PATH=$(LIB_PATH)/shared
+STATIC_OBJECT=$(patsubst $(SRC_PATH)/%.c,$(LIB_STATIC_PATH)/%.o,$(SRC))
+SHARED_OBJECT=$(patsubst $(SRC_PATH)/%.c,$(LIB_SHARED_PATH)/%.o,$(SRC))
 
-TEST_PATH=build/test
-
-DOXYGEN_PATH=doc/doxygen
-
-DOXYGEN_REFMAN=$(DOXYGEN_PATH)/latex/refman.pdf
-
-DOC_PDF=doc/doc.pdf
-
-LIB_STATIC_PATH=build/lib/static
+# libs
 LIB_STATIC=$(LIB_STATIC_PATH)/libgenerics.a
-LIB_SHARED_PATH=build/lib/shared
 LIB_SHARED=$(LIB_SHARED_PATH)/libgenerics.so
-OBJ_SHARED=build/obj-shared
 
-INSTALL_ARTEFACT_PATH=/usr/lib
-INSTALL_INCLUDE_PATH=/usr/include/generics
+# installation
+LIB_STATIC_INSTALL=/usr/lib/libgenerics.a
+LIB_SHARED_INSTALL=/usr/lib/libgenerics.so
+HEADER_INSTALL=/usr/include/generics
 
+# example
+EXAMPLE_PATH=doc/examples
+EXAMPLE=$(wildcard $(EXAMPLE_PATH)/*.c)
+
+# --RULES-DEFINITION---------------------------------------
+# objects (*.o) rule
+define static_object_rule
+$(1): $(patsubst $(LIB_STATIC_PATH)/%.o,$(SRC_PATH)/%.c,$(1)) $(patsubst $(LIB_STATIC_PATH)/%.o,$(INCLUDE)/%.h,$(1))
+	@mkdir -p $(LIB_STATIC_PATH)
+	$(GCC) $(GCC_FLAGS) -c -o $(1) $(patsubst $(LIB_STATIC_PATH)/%.o,$(SRC_PATH)/%.c,$(1)) -I $(INCLUDE)
+endef
+
+define shared_object_rule
+$(1): $(patsubst $(LIB_SHARED_PATH)/%.o,$(SRC_PATH)/%.c,$(1)) $(patsubst $(LIB_SHARED_PATH)/%.o,$(INCLUDE)/%.h,$(1))
+	@mkdir -p $(LIB_SHARED_PATH)
+	$(GCC) $(GCC_FLAGS) -fPIC -c -o $(1) $(patsubst $(LIB_SHARED_PATH)/%.o,$(SRC_PATH)/%.c,$(1)) -I $(INCLUDE)
+endef
+
+# --RULES--------------------------------------------------
 all: $(LIB_STATIC) $(LIB_SHARED)
 
-$(OBJ): $(SRC) $(HEADER)
-	@[ -d $(OBJ) ] || mkdir -p $(OBJ)
-	$(GCC) -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
-	mv *.o $(OBJ)
+$(foreach obj, $(STATIC_OBJECT), $(eval $(call static_object_rule, $(obj))))
+$(foreach obj, $(SHARED_OBJECT), $(eval $(call shared_object_rule, $(obj))))
 
-$(EXAMPLES_BIN): $(OBJ)
-	@[ -d $(EXAMPLES_BIN) ] || mkdir -p $(EXAMPLES_BIN)
-	@for example in $(EXAMPLES_PATH)/*.c ;\
-	do \
-		bin=$$(basename $${example}) ;\
-		echo $(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} $(GCC_FLAGS) ;\
-		$(GCC) $${example} -o $(EXAMPLES_BIN)/$${bin%.c} $(GCC_FLAGS) ;\
-	done
+$(LIB_STATIC): $(STATIC_OBJECT)
+	ar -cvq $(LIB_STATIC) $(STATIC_OBJECT)
 
-$(TEST_PATH): $(EXAMPLES_BIN)
-	@[ -d  $(TEST_PATH) ] || mkdir -p $(TEST_PATH)
-	@for bin in $(EXAMPLES_BIN)/* ;\
-	do \
-		test=$$(basename $${bin}) ;\
-		echo valgrind ./$${bin} '1>' $(TEST_PATH)/$${test}_output.txt '2>' $(TEST_PATH)/$${test}_valgrind.txt ;\
-		valgrind ./$${bin} 1> $(TEST_PATH)/$${test}_output.txt 2> $(TEST_PATH)/$${test}_valgrind.txt ;\
-	done
-	@for txt in $(TEST_PATH)/*.txt ;\
-	do \
-		echo "$${txt}--------------------------------------" ;\
-		cat "$${txt}" ;\
-	done | less
+$(LIB_SHARED): $(SHARED_OBJECT)
+	$(GCC) -shared -Wl,-soname,libgenerics.so -o $(LIB_SHARED) $(SHARED_OBJECT)
 
-$(DOXYGEN_PATH): .doxygen $(SRC) $(HEADER)
-	doxygen .doxygen
-
-$(DOXYGEN_REFMAN): $(DOXYGEN_PATH)
-	cd $(DOXYGEN_PATH)/latex && make
-
-$(DOC_PDF): $(DOXYGEN_REFMAN)
-	cp $(DOXYGEN_PATH)/latex/refman.pdf $(DOC_PDF)
-
-$(LIB_STATIC): $(OBJ)
-	@[ -d $(LIB_STATIC_PATH) ] || mkdir -p $(LIB_STATIC_PATH)
-	ar -cvq $(LIB_STATIC) $(OBJ)/*.o
-	
-$(OBJ_SHARED): $(SRC) $(HEADER)
-	@[ -d $(OBJ_SHARED) ] || mkdir -p $(OBJ_SHARED)
-	$(GCC) -fPIC -c $(SRC) -I $(INCLUDE) $(GCC_FLAGS)
-	mv *.o $(OBJ_SHARED)
-
-$(LIB_SHARED): $(OBJ_SHARED)
-	@[ -d $(LIB_SHARED_PATH) ] || mkdir -p $(LIB_SHARED_PATH)
-	gcc -shared -Wl,-soname,libgenerics.so -o $(LIB_SHARED) $(OBJ_SHARED)/*.o
-
+# --INSTALATION--------------------------------------------
 install: $(LIB_STATIC) $(LIB_SHARED)
-	@[ -d $(INSTALL_INCLUDE_PATH) ] || mkdir -p $(INSTALL_INCLUDE_PATH)
-	cp $(HEADER) $(INSTALL_INCLUDE_PATH)
-	cp $(LIB_SHARED) $(LIB_STATIC) $(INSTALL_ARTEFACT_PATH)
+	mkdir -p $(HEADER_INSTALL)
+	cp -vr $(HEADER) $(HEADER_INSTALL)
+	cp $(LIB_STATIC) $(LIB_STATIC_INSTALL)
+	cp $(LIB_SHARED) $(LIB_SHARED_INSTALL)
 
 uninstall:
-	rm -vrf $(INSTALL_INCLUDE_PATH)
-	rm -vf $(INSTALL_ARTEFACT_PATH)/libgenerics.a $(INSTALL_ARTEFACT_PATH)/libgenerics.so
+	rm $(patsubst $(INCLUDE)/%,$(HEADER_INSTALL)/%,$(HEADER))
+	rmdir $(HEADER_INSTALL)
+	rm $(LIB_STATIC_INSTALL)
+	rm $(LIB_SHARED_INSTALL)
+
+# --EXAMPLE------------------------------------------------
+examples: $(EXAMPLE)
+	make -C $(EXAMPLE_PATH) BUILD_PATH=../../build/examples
