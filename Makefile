@@ -67,7 +67,7 @@ $(DOXYGEN_REFMAN): $(DOXYGEN_PATH)
 $(DOC_PDF): $(DOXYGEN_REFMAN)
 	cp $(DOXYGEN_PATH)/latex/refman.pdf $(DOC_PDF)
 
-$(LIB_STATIC): $(OBJ) $(OBJ)/*.o
+$(LIB_STATIC): $(OBJ)
 	@[ -d $(LIB_STATIC_PATH) ] || mkdir -p $(LIB_STATIC_PATH)
 	ar -cvq $(LIB_STATIC) $(OBJ)/*.o
 	
@@ -86,5 +86,5 @@ install: $(LIB_STATIC) $(LIB_SHARED)
 	cp $(LIB_SHARED) $(LIB_STATIC) $(INSTALL_ARTEFACT_PATH)
 
 uninstall:
-	-rm -vr $(INSTALL_INCLUDE_PATH)
-	rm -v $(INSTALL_ARTEFACT_PATH)/libgenerics.a $(INSTALL_ARTEFACT_PATH)/libgenerics.so
+	rm -vrf $(INSTALL_INCLUDE_PATH)
+	rm -vf $(INSTALL_ARTEFACT_PATH)/libgenerics.a $(INSTALL_ARTEFACT_PATH)/libgenerics.so
