@@ -1,7 +1,7 @@
 # --VARIABLES----------------------------------------------
 # gcc
 GCC=gcc
-GCC_FLAGS=-Wall -Wextra -O3
+GCC_FLAGS=-ansi -Wall -Wextra -O3
 
 # paths and files
 BUILD_PATH=build

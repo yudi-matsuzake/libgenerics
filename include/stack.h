@@ -43,4 +43,4 @@ void stack_push(struct stack_t* q, void* e);
 void* stack_pop(struct stack_t* q);
 void stack_destroy(struct stack_t* q);
 
-#endif // __STACK_T_H__
+#endif

@@ -42,3 +42,5 @@ build/
 
 #doxygen
 doc/doxygen
+*~
+*.swp

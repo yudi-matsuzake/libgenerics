@@ -19,7 +19,6 @@
 #ifndef __GRAPH_T_H__
 #define __GRAPH_T_H__
 #include <string.h>
-#include <assert.h>
 #include "queue.h"
 
 /** Graph structure and elements.
@@ -38,4 +37,4 @@ void* graph_get_label_at(graph_t* g, size_t index);
 void graph_set_label_at(graph_t* g, size_t index, void* label);
 void graph_destroy(graph_t* g);
 
-#endif // __GRAPH_T_H__
+#endif

@@ -38,4 +38,4 @@ void vector_add (vector_t* v, void* elem);
 void vector_set_min_buf_siz(size_t new_min_buf_size);
 size_t vector_get_min_buf_siz(void);
 
-#endif // __VECTOR_T_H__
+#endif
