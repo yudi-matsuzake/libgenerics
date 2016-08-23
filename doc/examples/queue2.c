@@ -20,23 +20,16 @@ int main()
 	i = 4;
 	queue_enqueue(&q, &i);
 
-	int* ptr;
-	ptr = queue_remove(&q, q.head->next);
-	printf("removed %d\n", *ptr);
-	free(ptr);
+	int n;
+	if(queue_remove(&q, q.head->next, &n) == GERROR_OK)
+		printf("removed %d\n", n);
+	if(queue_remove(&q, q.head, &n) == GERROR_OK)
+		printf("removed %d\n", n);
+	if(queue_remove(&q, q.tail, &n) == GERROR_OK)
+		printf("removed %d\n", n);
+	if(queue_remove(&q, q.head, &n) == GERROR_OK)
+		printf("removed %d\n", n);
 	
-	ptr = queue_remove(&q, q.head);
-	printf("removed %d\n", *ptr);
-	free(ptr);
-
-	ptr = queue_remove(&q, q.tail);
-	printf("removed %d\n", *ptr);
-	free(ptr);
-
-	ptr = queue_remove(&q, q.head);
-	printf("removed %d\n", *ptr);
-	free(ptr);
-
 	queue_destroy(&q);
 	return 0;
 }

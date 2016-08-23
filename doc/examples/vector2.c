@@ -8,7 +8,7 @@ int main()
 
 	vector_t v;
 	size_t new_buf_siz = 32;
-	printf("Set the min_buf_siz from %d to %d\n",
+	printf("Set the min_buf_siz from %lu to %lu\n",
 			vector_get_min_buf_siz(), new_buf_siz);
 	vector_set_min_buf_siz(new_buf_siz);
 
@@ -17,15 +17,16 @@ int main()
 	int i;
 	for ( i = 0; i<N ; i++ ){
 		vector_add(&v, &i);
-		printf("add: vec[%2d](bufsize: %3d) = %2d\n",
+		printf("add: vec[%2d](bufsize: %3lu) = %2d\n",
 				i,
 				v.buffer_size,
 				((int*)v.data)[i]);
 	}
 
 	for ( i = 0; i<N ; i++ ){
-		int* tmp = (int*)vector_at(&v, i);
-		printf("v[%2d] = %2d\n", i, *tmp);
+		int tmp;
+		vector_at(&v, i, &tmp);
+		printf("v[%2d] = %2d\n", i, tmp);
 	}
 
 	vector_destroy(&v);

@@ -35,17 +35,17 @@ int main()
 
 	printf("---------\n");
 	for( i=0; i<N/2; i++ ){
-		int* n = queue_dequeue(&q);
-		printf("dequeue(q): %d\n", *n);
-		free(n);
+		int n;
+		queue_dequeue(&q, &n);
+		printf("dequeue(q): %d\n", n);
 
-		double* f = queue_dequeue(&d);
-		printf("dequeue(d): %lf\n", *f);
-		free(f);
+		double f;
+		queue_dequeue(&d, &f);
+		printf("dequeue(d): %lf\n", f);
 
-		struct cord* cord = queue_dequeue(&c);
-		printf("dequeue(c): [%d, %d]\n", cord->x, cord->y);
-		free(cord);
+		struct cord cord;
+		queue_dequeue(&c, &cord);
+		printf("dequeue(c): [%d, %d]\n", cord.x, cord.y);
 	}
 
 	queue_destroy(&q);

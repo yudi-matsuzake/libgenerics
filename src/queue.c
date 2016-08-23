@@ -25,15 +25,20 @@
   * @param member_size	size of the elements that will be
   * 			indexed by `q`
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `q` is a NULL
+  * 		pointer
   */
-void queue_create(struct queue_t* q, size_t member_size)
+gerror_t queue_create(struct queue_t* q, size_t member_size)
 {
-	if(!q) return;
+	if(!q) return GERROR_NULL_STRUCTURE;
 
 	q->member_size = member_size;
 	q->size = 0;
 	q->head = NULL;
 	q->tail = NULL;
+
+	return GERROR_OK;
 }
 
 /** Enqueues the element pointed by `e` in the
@@ -43,15 +48,26 @@ void queue_create(struct queue_t* q, size_t member_size)
   * @param e	pointer to the element that will be indexed
   * 		by q.
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `q` is a NULL
+  * 		pointer
+  *
   */
-void queue_enqueue(struct queue_t* q, void* e)
+gerror_t queue_enqueue(struct queue_t* q, void* e)
 {
-	if(!q || !e) return;
+	if(!q) return GERROR_NULL_STRUCTURE;
 	
 	struct qnode_t* new_node = (qnode_t*) malloc(sizeof(qnode_t));
-	new_node->data = malloc(q->member_size);
+
+	if(q->member_size)
+		new_node->data = malloc(q->member_size);
+	else
+		new_node->data = NULL;
+
 	new_node->next = new_node->prev = NULL;
-	memcpy(new_node->data, e, q->member_size);
+
+	if(q->member_size && e)
+		memcpy(new_node->data, e, q->member_size);
 
 	if(q->tail){
 		q->tail->next = new_node;
@@ -63,17 +79,30 @@ void queue_enqueue(struct queue_t* q, void* e)
 	}
 
 	q->size++;
+
+	return GERROR_OK;
 }
 
 /** Dequeues the first element of the queue `q`
   *
   * @param q	pointer to a queue structure;
+  * @param e	pointer to the previous allocated element
+  * 		memory that will be write with de dequeued
+  * 		element.
   * 
-  * @return a pointer to the element that must be freed;
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_HEAD in case that the head `q->head`
+  * 		is a null pointer.
+  * 		GERROR_NULL_STRUCURE in case `q` is a NULL
+  * 		pointer
+  * 		GERROR_TRY_REMOVE_EMPTY_STRUCTURE in case
+  * 		that `q` has no element.
   */
-void* queue_dequeue(struct queue_t* q)
+gerror_t queue_dequeue(struct queue_t* q, void* e)
 {
-	if(!q || !q->head) return NULL;
+	if(!q)		return GERROR_NULL_STRUCTURE;
+	if(!q->head)	return GERROR_NULL_HEAD;
+	if(!q->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
 
 	void* ptr = q->head->data;
 	struct qnode_t* old_node = q->head;
@@ -87,20 +116,34 @@ void* queue_dequeue(struct queue_t* q)
 
 	q->size--;
 	free(old_node);
-	return ptr;
+	if(q->member_size && e)
+		memcpy(e, ptr, q->member_size);
+	if(ptr)
+		free(ptr);
+	return GERROR_OK;
 }
 
 /** Removes the element `node` of the queue `q`.
   * 
   * @param q	pointer to a queue structure;
   * @param node	element to be removed from the queue
+  * @param e	pointer to the memory that will be
+  * 		write with the removed element
   *
-  * @return a pointer to the value of the node just removed
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `q` is a NULL
+  * 		pointer
+  * 		GERROR_NULL_NODE in case `node` is NULL;
+  * 		GERROR_TRY_REMOVE_EMPTY_STRUCTURE in case
+  * 		that `q` has no element.
   *
   */
-void* queue_remove(struct queue_t* q, struct qnode_t* node)
+gerror_t queue_remove(struct queue_t* q, struct qnode_t* node, void* e)
 {
-	if(!q || !node) return NULL;
+	if(!q)		return GERROR_NULL_STRUCTURE;
+	if(!node)	return GERROR_NULL_NODE;
+	if(!q->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
+
 	if(node->prev)
 		node->prev->next = node->next;
 	else
@@ -115,7 +158,12 @@ void* queue_remove(struct queue_t* q, struct qnode_t* node)
 	node->next = node->prev = NULL;
 	void* ptr = node->data;
 	free(node);
-	return ptr;
+	
+	if(q->member_size && e)
+		memcpy(e, ptr, q->member_size);
+	if(ptr)
+		free(ptr);
+	return GERROR_OK;
 }
 
 /** Deallocate the nodes of the queue q.
@@ -123,16 +171,22 @@ void* queue_remove(struct queue_t* q, struct qnode_t* node)
   *
   * @param q	pointer to a queue structure;
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `q` is a NULL
+  * 		pointer
   */
-void queue_destroy(struct queue_t* q)
+gerror_t queue_destroy(struct queue_t* q)
 {
-	if(!q) return;
+	if(!q) return GERROR_NULL_STRUCTURE;
 
 	struct qnode_t* i, *j;
 
 	for( i=q->head; i!=NULL; i=j ){
 		j = i->next;
-		free(i->data);
+		if(i->data)
+			free(i->data);
 		free(i);
 	}
+
+	return GERROR_OK;
 }

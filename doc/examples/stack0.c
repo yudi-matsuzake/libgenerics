@@ -19,14 +19,10 @@ int main()
 		stack_push(&s, &temp);
 	}
 
-	int* data;
-	while( (data = stack_pop(&s)) ){
-		int poped = *data;
-		printf("pop: %d\n", poped);
-		free(data);
-	}
+	int data;
+	while( (stack_pop(&s, &data) == GERROR_OK) )
+		printf("pop: %d\n", data);
 
 	stack_destroy(&s);
-
 	return 0;
 }

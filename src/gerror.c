@@ -16,32 +16,22 @@
  *
  * For more information, please refer to <http://unlicense.org/>
  */
-#ifndef __STACK_T_H__
-#define __STACK_T_H__
-#include <stdlib.h>
-#include <string.h>
 #include "gerror.h"
 
-/** node of a stack
-  */
-typedef struct snode_t{
-	struct snode_t* next;
-	struct snode_t* prev;
+char* gerror_to_string[GERROR_N_ERROR] = {
+	"Success",
+	"Null pointer to structure",
+	"Null pointer to the head of structure",
+	"Null pointer to the node",
+	"Attempt to remove an element but the structure is empty",
+	"Attempt to add a edge with inexistent vertex",
+	"Attempt to access a position out of the container or buffer",
+};
 
-	void* data;
-}snode_t;
+char* gerror_to_str (gerror_t g)
+{
+	if( g < GERROR_N_ERROR )
+		return gerror_to_string[g];
 
-/** represents the stack structure.
-  */
-typedef struct stack_t{
-	size_t size;
-	size_t member_size;
-	struct snode_t* head;
-}stack_t;
-
-gerror_t stack_create(struct stack_t* q, size_t member_size);
-gerror_t stack_push(struct stack_t* q, void* e);
-gerror_t stack_pop(struct stack_t* q, void* e);
-gerror_t stack_destroy(struct stack_t* q);
-
-#endif
+	return NULL;
+}

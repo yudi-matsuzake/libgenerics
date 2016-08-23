@@ -11,7 +11,7 @@ The entire implementation was aimed at providing two _features_:
 
 ```c
 #include <stdio.h>
-#include "queue.h"
+#include <generics/queue.h>
 
 #define N 10
 
@@ -24,10 +24,11 @@ int main()
 	for( i=0; i<N; i++ )
 		queue_enqueue(&q, &i);
 
-
-	for( i=0; i<N/2; i++ )
-		free(queue_dequeue(&q));
-
+	int temp;
+	for( i=0; i<N/2; i++ ){
+		queue_dequeue(&q, &temp);
+		printf("dequeued: %d\n", temp);
+	}
 
 	queue_destroy(&q);
 	return 0;
@@ -49,6 +50,14 @@ To make sure everything went well you may compile the examples:
 ```
 $ make build/examples
 ```
+
+You can copy the code above to a file name `main.c` and compile after the installation using:
+
+```shell
+$ gcc main.c -lgenerics
+```
+
+[You may also try another examples](https://github.com/yudi-matsuzake/libgenerics/tree/master/doc/examples).
 
 Uninstall:
 

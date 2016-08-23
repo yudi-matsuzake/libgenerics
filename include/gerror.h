@@ -16,32 +16,21 @@
  *
  * For more information, please refer to <http://unlicense.org/>
  */
-#ifndef __STACK_T_H__
-#define __STACK_T_H__
-#include <stdlib.h>
-#include <string.h>
-#include "gerror.h"
+#ifndef __GERROR_H__
+#define __GERROR_H__
+#include <stdio.h>
 
-/** node of a stack
-  */
-typedef struct snode_t{
-	struct snode_t* next;
-	struct snode_t* prev;
+typedef enum gerror_t{
+	GERROR_OK,
+	GERROR_NULL_STRUCTURE,
+	GERROR_NULL_HEAD,
+	GERROR_NULL_NODE,
+	GERROR_TRY_REMOVE_EMPTY_STRUCTURE,
+	GERROR_TRY_ADD_EDGE_NO_VERTEX,
+	GERROR_ACCESS_OUT_OF_BOUND,
+	GERROR_N_ERROR
+} gerror_t;
 
-	void* data;
-}snode_t;
-
-/** represents the stack structure.
-  */
-typedef struct stack_t{
-	size_t size;
-	size_t member_size;
-	struct snode_t* head;
-}stack_t;
-
-gerror_t stack_create(struct stack_t* q, size_t member_size);
-gerror_t stack_push(struct stack_t* q, void* e);
-gerror_t stack_pop(struct stack_t* q, void* e);
-gerror_t stack_destroy(struct stack_t* q);
+char* gerror_to_str (gerror_t g);
 
 #endif

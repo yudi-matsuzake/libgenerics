@@ -23,7 +23,7 @@ void print_lexicography_node(struct tnode_t *node, struct queue_t* q)
 			char c = i;
 			queue_enqueue(q, &c);
 			print_lexicography_node(node->children[i], q);
-			free(queue_remove(q, q->tail));
+			queue_remove(q, q->tail, NULL);
 		}
 
 	}
@@ -68,7 +68,7 @@ int main()
 
 	print_lexicography(&t);
 	printf("remove: %s\n", nome);
-	free(trie_remove_element(&t, nome, strlen(nome)));
+	trie_remove_element(&t, nome, strlen(nome));
 	print_lexicography(&t);
 
 	trie_destroy(&t);

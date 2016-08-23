@@ -83,9 +83,9 @@ tnode_t* node_at ( struct trie_t* t, void* string, size_t size)
   * @param member_size	size in bytes of the indexed elements
   * 			by the trie.
   */
-void trie_create (struct trie_t* t, size_t member_size)
+gerror_t trie_create (struct trie_t* t, size_t member_size)
 {
-	if(!t) return;
+	if(!t) return GERROR_NULL_STRUCTURE;
 
 	t->size = 0;
 	t->member_size = member_size;
@@ -94,6 +94,8 @@ void trie_create (struct trie_t* t, size_t member_size)
 	int i;
 	for(i=0; i<NBYTE; i++)
 		t->root.children[i] = NULL;
+
+	return GERROR_OK;
 }
 
 /*
@@ -119,9 +121,9 @@ void trie_destroy_tnode (struct tnode_t* node)
   *
   * @param t pointer to the structure
   */
-void trie_destroy (struct trie_t* t)
+gerror_t trie_destroy (struct trie_t* t)
 {
-	if(!t) return;
+	if(!t) return GERROR_NULL_STRUCTURE;
 
 	int i;
 	
@@ -134,6 +136,8 @@ void trie_destroy (struct trie_t* t)
 	}
 	t->size = 0;
 	t->member_size = 0;
+
+	return GERROR_OK;
 }
 
 /** Adds the `elem` and maps it with the `string` with size `size`.
@@ -144,16 +148,19 @@ void trie_destroy (struct trie_t* t)
   * @param size		size of the string of bytes
   * @param elem		pointer to the element to add
   */
-void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
+gerror_t trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
-	if(!t || !string || !elem) return;
+	if(!t) return GERROR_NULL_STRUCTURE;
 	struct tnode_t* node = trie_get_node_or_allocate(t, string, size);
 
 	if(node->value == NULL)
 		node->value = malloc(t->member_size);
 
-	memcpy(node->value, elem, t->member_size);
+	if(t->member_size && string)
+		memcpy(node->value, elem, t->member_size);
 	t->size++;
+
+	return GERROR_OK;
 }
 
 /** Removes the element mapped by `string`.
@@ -162,21 +169,27 @@ void trie_add_element (struct trie_t* t, void* string, size_t size, void* elem)
   * @param string	pointer to the string of bytes to map elem;
   * @param size		size of the string of bytes.
   *
-  * @return pointer to the removed element
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `t` is a NULL
+  * 		GERROR_OUT_OF_BOUND the `elem` does not exist
+  * 		in `string map`
   */
-void* trie_remove_element (struct trie_t* t, void* string, size_t size)
+gerror_t trie_remove_element (struct trie_t* t, void* string, size_t size)
 {
-	if(!t || !string) return NULL;
+	if(!t) return GERROR_NULL_STRUCTURE;
 
 	struct tnode_t* node = node_at(t, string, size);
-	if(!node) return NULL;
+	if(!node) return GERROR_ACCESS_OUT_OF_BOUND;
 
 	void* removed_value = node->value;
 
 	node->value = NULL;
 
 	t->size--;
-	return removed_value;
+	void* ptr = removed_value;
+	if(ptr)
+		free(ptr);
+	return GERROR_OK;
 }
 
 /** Returns the element mapped by `string`. If the map does not 
@@ -185,20 +198,25 @@ void* trie_remove_element (struct trie_t* t, void* string, size_t size)
   * @param t		pointer to the structure;
   * @param string	pointer to the string of bytes to map elem;
   * @param size		size of the string of bytes.
+  * @param elem		pointer to the memory allocated that
+  * 			will be write with the elem mapped by `string`
   *
-  * @return The removed element mapped by `string`.
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `t` is a NULL
   */
-void* trie_get_element (struct trie_t* t, void* string, size_t size)
+gerror_t trie_get_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
-	if(!t || !string)
-		return NULL;
+	if(!t) return GERROR_NULL_STRUCTURE;
 
 	struct tnode_t* node = node_at(t, string, size);
 
 	if(node == NULL)
-		return NULL;
+		return GERROR_ACCESS_OUT_OF_BOUND;
 
-	return node->value;
+	if(t->member_size)
+		memcpy(elem, node->value, t->member_size);
+
+	return GERROR_OK;
 }
 
 /** Sets the value mapped by `string`.
@@ -209,15 +227,17 @@ void* trie_get_element (struct trie_t* t, void* string, size_t size)
   * @param size		size of the string of bytes.
   * @param elem		pointer to the element to add
   */
-void trie_set_element (struct trie_t* t, void* string, size_t size, void* elem)
+gerror_t trie_set_element (struct trie_t* t, void* string, size_t size, void* elem)
 {
 
-	if(!t || !string) return;
+	if(!t) return GERROR_NULL_STRUCTURE;
 		
 	struct tnode_t* node = node_at(t, string, size);
 	if(node){
-		free(node->value);
-		node->value = elem;
+		if(t->member_size)
+			memcpy(node->value, elem, t->member_size);
+
 	}
 
+	return GERROR_OK;
 }

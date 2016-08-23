@@ -20,6 +20,7 @@
 #define __QUEUE_T_H__
 #include <stdlib.h>
 #include <string.h>
+#include "gerror.h"
 
 /** queue node.
   *
@@ -40,10 +41,10 @@ typedef struct queue_t{
 	struct qnode_t* tail;
 }queue_t;
 
-void queue_create(struct queue_t* q, size_t member_size);
-void queue_enqueue(struct queue_t* q, void* e);
-void* queue_dequeue(struct queue_t* q);
-void queue_destroy(struct queue_t* q);
-void* queue_remove(struct queue_t* q, struct qnode_t* node);
+gerror_t queue_create(struct queue_t* q, size_t member_size);
+gerror_t queue_enqueue(struct queue_t* q, void* e);
+gerror_t queue_dequeue(struct queue_t* q, void* e);
+gerror_t queue_destroy(struct queue_t* q);
+gerror_t queue_remove(struct queue_t* q, struct qnode_t* node, void* e);
 
 #endif

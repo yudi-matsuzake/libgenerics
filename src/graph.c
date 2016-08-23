@@ -24,10 +24,12 @@
   * @param g		pointer to a graph structure;
   * @param member_size	size of the elements that will be
   * 			indexed by `g`
-  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `g` is a NULL
   */
-void graph_create(graph_t* g, size_t size, size_t member_size)
+gerror_t graph_create(graph_t* g, size_t size, size_t member_size)
 {
+	if(!g) return GERROR_NULL_STRUCTURE;
 	g->V = size;
 	g->E = 0;
 	g->member_size = member_size;
@@ -37,8 +39,14 @@ void graph_create(graph_t* g, size_t size, size_t member_size)
 	for(i=0; i<size; i++)
 		queue_create(&g->adj[i], sizeof(int));
 
-	g->label = malloc(g->member_size*size);
-	memset(g->label, 0, size*g->member_size);
+	if( g->member_size ){
+		g->label = malloc(g->member_size*size);
+		memset(g->label, 0, size*g->member_size);
+	}else{
+		g->label = NULL;
+	}
+
+	return GERROR_OK;
 }
 
 /** Adds an edge on the graph `g` from the vertex `from`
@@ -49,12 +57,19 @@ void graph_create(graph_t* g, size_t size, size_t member_size)
   * @param from		index of the first vertex;
   * @param to		index of the incident vertex.
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_TRY_ADD_EDGE_NO_VERTEX in case that
+  * 		`from` or `to` not exists in the graph
+  *
   */
-void graph_add_edge(graph_t* g, size_t from, size_t to)
+gerror_t graph_add_edge(graph_t* g, size_t from, size_t to)
 {
-	if(!g || from > g->V || to > g->V) return;
+	if(!g) return GERROR_NULL_STRUCTURE;
+	if(from > g->V || to > g->V) return GERROR_TRY_ADD_EDGE_NO_VERTEX;
 	queue_enqueue(&g->adj[from], &to);
 	g->E++;
+
+	return GERROR_OK;
 }
 
 /** Gets the label of the vertex in the `index` position
@@ -62,15 +77,24 @@ void graph_add_edge(graph_t* g, size_t from, size_t to)
   *
   * @param g		pointer to a graph structure;
   * @param index	index of the vertex;
+  * @param label	pointer to the memory allocated that
+  * 			will be write with the label in `index`
   * 
-  * @return	pointer to the label of the vertex positioned
-  * 		in `index`.
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `g` is a NULL
   *
   */
-void* graph_get_label_at(graph_t* g, size_t index)
+gerror_t graph_get_label_at(graph_t* g, size_t index, void* label)
 {
-	if(!g || index >= g->V) return NULL;
-	return g->label + (index * g->member_size);
+	if(!g) return GERROR_NULL_STRUCTURE;
+	if (index >= g->V) return GERROR_ACCESS_OUT_OF_BOUND;
+
+	if(g->label && g->member_size && label){
+		void* ptr = g->label + (index * g->member_size);
+		memcpy(label, ptr, g->member_size);
+	}
+
+	return GERROR_OK;
 }
 
 /** Sets the label at the `index` to `label`.
@@ -79,14 +103,21 @@ void* graph_get_label_at(graph_t* g, size_t index)
   * @param index	index of the vertex;
   * @param label	the new label of the vertex positioned
   * 			in `index`
-  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_ACCESS_OUT_OF_BOUND in case that `index`
+  * 		is out of bound
   */
-void graph_set_label_at(graph_t* g, size_t index, void* label)
+gerror_t graph_set_label_at(graph_t* g, size_t index, void* label)
 {
-	if(!g || index >= g->V) return;
+	if(!g) return GERROR_NULL_STRUCTURE; 
+	if(index >= g->V) return GERROR_ACCESS_OUT_OF_BOUND;
 
-	void* at = graph_get_label_at(g, index);
-	memcpy(at, label, g->member_size);
+	if(g->member_size){
+		void* at = g->label + (index * g->member_size);
+		memcpy(at, label, g->member_size);
+	}
+
+	return GERROR_OK;
 }
 
 /** Deallocates the structures in `g`.
@@ -94,9 +125,13 @@ void graph_set_label_at(graph_t* g, size_t index, void* label)
   *
   * @param g		pointer to a graph structure;
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `g` is a NULL
+  *
   */
-void graph_destroy(graph_t* g)
+gerror_t graph_destroy(graph_t* g)
 {
+	if(!g) return GERROR_NULL_STRUCTURE;
 	g->member_size = 0;
 
 	size_t i;
@@ -105,6 +140,9 @@ void graph_destroy(graph_t* g)
 	}
 	
 	free(g->adj);
-	free(g->label);
+	if(g->label)
+		free(g->label);
 	g->V = g->E = 0;
+
+	return GERROR_OK;
 }

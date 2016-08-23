@@ -13,15 +13,16 @@ int main()
 	int i;
 	for ( i = 0; i<N ; i++ ){
 		vector_add(&v, &i);
-		printf("add: vec[%2d](bufsize: %3d) = %2d\n",
+		printf("add: vec[%2d](bufsize: %3zu) = %2d\n",
 				i,
 				v.buffer_size,
 				((int*)v.data)[i]);
 	}
 
 	for ( i = 0; i<N ; i++ ){
-		int* tmp = (int*)vector_at(&v, i);
-		printf("v[%2d] = %2d\n", i, *tmp);
+		int tmp;
+		vector_at(&v, i, &tmp);
+		printf("v[%2d] = %2d\n", i, tmp);
 	}
 
 	vector_destroy(&v);

@@ -10,15 +10,17 @@ void printf_graph(graph_t* g)
 
 	for(i=0; i<g->V; i++)
 	{
-		int* label = graph_get_label_at(g, i);
-		printf("[%d]->", *label);
+		int label;
+		graph_get_label_at(g, i, &label);
+
+		printf("[%d]->", label);
 		qnode_t* j;
 
 		for(j=g->adj[i].head; j!=NULL; j = j->next){
 			int adj_index = *(int*)j->data;
-			label = graph_get_label_at(g, adj_index);
+			graph_get_label_at(g, adj_index, &label);
 
-			printf("%d%s", *label, (j->next)?", ":"");
+			printf("%d%s", label, (j->next)?", ":"");
 		}
 		printf("\n");
 	}

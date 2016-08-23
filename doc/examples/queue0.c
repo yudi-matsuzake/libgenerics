@@ -20,9 +20,9 @@ int main()
 
 	printf("---------\n");
 	for( i=0; i<N/2; i++ ){
-		int* n = queue_dequeue(&q);
-		printf("dequeue(q): %d\n", *n);
-		free(n);
+		int n;
+		queue_dequeue(&q, &n);
+		printf("dequeue(q): %d\n", n);
 	}
 
 	queue_destroy(&q);

@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "gerror.h"
+
 typedef struct vector_t {
 	void* data;
 	size_t size;
@@ -29,12 +31,12 @@ typedef struct vector_t {
 	size_t member_size;
 } vector_t;
 
-void vector_create (vector_t* v, size_t initial_size, size_t member_size);
-void vector_destroy (vector_t* v);
-void vector_resize_buffer (vector_t* v, size_t new_size);
-void* vector_at (vector_t* v, size_t index);
-void vector_set_elem_at (vector_t* v, size_t index, void* elem);
-void vector_add (vector_t* v, void* elem);
+gerror_t vector_create (vector_t* v, size_t initial_size, size_t member_size);
+gerror_t vector_destroy (vector_t* v);
+gerror_t vector_resize_buffer (vector_t* v, size_t new_size);
+gerror_t vector_at (vector_t* v, size_t index, void* elem);
+gerror_t vector_set_elem_at (vector_t* v, size_t index, void* elem);
+gerror_t vector_add (vector_t* v, void* elem);
 void vector_set_min_buf_siz(size_t new_min_buf_size);
 size_t vector_get_min_buf_siz(void);
 

@@ -25,14 +25,17 @@
   * @param member_size	size of the elements that will be
   * 			indexed by `s`
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_ELEMENT in case that `e` is empty.
   */
-void stack_create(struct stack_t* s, size_t member_size)
+gerror_t stack_create(struct stack_t* s, size_t member_size)
 {
-	if(!s) return;
+	if(!s) return GERROR_NULL_STRUCTURE;
 
 	s->member_size = member_size;
 	s->size = 0;
 	s->head = NULL;
+	return GERROR_OK;
 }
 
 /** Add the element `e` in the beginning of the stack `s`.
@@ -41,31 +44,47 @@ void stack_create(struct stack_t* s, size_t member_size)
   * @param e	pointer to the element that will be indexed
   * 		by s.
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `s` is a NULL
   */
-void stack_push(struct stack_t* s, void* e)
+gerror_t stack_push(struct stack_t* s, void* e)
 {
-	if(!s) return;
+	if(!s) return GERROR_NULL_STRUCTURE;
 
 	struct snode_t* new_node = (snode_t*) malloc(sizeof(snode_t));
-	new_node->data = malloc(s->member_size);
+	if( s->member_size )
+		new_node->data = malloc(s->member_size);
+	else
+		new_node->data = NULL;
 	new_node->prev = NULL;
 	new_node->next = s->head;
-	memcpy(new_node->data, e, s->member_size);
+
+	if(s->member_size && e)
+		memcpy(new_node->data, e, s->member_size);
 
 	s->head = new_node;
 
 	s->size++;
+
+	return GERROR_OK;
 }
 
 /** Pops the first element of the stack `s`.
   *
-  * @param s		pointer to a stack structure;
+  * @param s	pointer to a stack structure;
+  * @param e	pointer to the previous allocated element
   * 
-  * @return a pointer to the element that must be freed;
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `s` is a NULL
+  * 		GERROR_NULL_HEAD in case that the head `s->head`
+  * 		GERROR_TRY_REMOVE_EMPTY_STRUCTURE in case that `s`
+  * 			is empty
   */
-void* stack_pop (struct stack_t* s)
+gerror_t stack_pop (struct stack_t* s, void* e)
 {
-	if(!s || !s->head) return NULL;
+	if(!s)		return GERROR_NULL_STRUCTURE;
+	if(!s->head)	return GERROR_NULL_HEAD;
+	if(!s->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
 
 	void* ptr = s->head->data;
 	struct snode_t* old_node = s->head;
@@ -77,7 +96,12 @@ void* stack_pop (struct stack_t* s)
 
 	s->size--;
 	free(old_node);
-	return ptr;
+
+	if(s->member_size && e)
+		memcpy(e, ptr, s->member_size);
+	if(ptr)
+		free(ptr);
+	return GERROR_OK;
 }
 
 
@@ -87,16 +111,21 @@ void* stack_pop (struct stack_t* s)
   *
   * @param s		pointer to a stack structure;
   *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `s` is a NULL
   */
-void stack_destroy(struct stack_t* s)
+gerror_t stack_destroy(struct stack_t* s)
 {
-	if(!s) return;
+	if(!s) return GERROR_NULL_STRUCTURE;
 
 	struct snode_t* i, *j;
 
 	for( i=s->head; i!=NULL; i=j ){
 		j = i->next;
-		free(i->data);
+		if(i->data)
+			free(i->data);
 		free(i);
 	}
+
+	return GERROR_OK;
 }

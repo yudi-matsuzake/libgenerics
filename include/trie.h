@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "gerror.h"
+
 #define NBYTE (0x100)
 
 /** node of a trie_t element.
@@ -39,12 +41,12 @@ typedef struct trie_t {
 	struct tnode_t root;
 } trie_t;
 
-void trie_create(struct trie_t* t, size_t member_size);
-void trie_destroy(struct trie_t* t);
-void trie_add_element(struct trie_t* t, void* string, size_t size, void* elem);
-void* trie_remove_element(struct trie_t* t, void* string, size_t size);
-void* trie_get_element(struct trie_t* t, void* string, size_t size);
-void trie_set_element(struct trie_t* t, void* string, size_t size, void* elem);
+gerror_t trie_create(struct trie_t* t, size_t member_size);
+gerror_t trie_destroy(struct trie_t* t);
+gerror_t trie_add_element(struct trie_t* t, void* string, size_t size, void* elem);
+gerror_t trie_remove_element(struct trie_t* t, void* string, size_t size);
+gerror_t trie_get_element(struct trie_t* t, void* string, size_t size, void* elem);
+gerror_t trie_set_element(struct trie_t* t, void* string, size_t size, void* elem);
 tnode_t* trie_get_node_or_allocate ( struct trie_t* t, void* string, size_t size);
 
 #endif

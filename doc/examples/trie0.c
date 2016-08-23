@@ -28,24 +28,24 @@ int main()
 	trie_add_element(&t, nome, strlen(nome), &i);
 
 	nome = "yudi";
-	int* n = (int*)trie_get_element(&t, nome, strlen(nome));
-	printf("[%s] = %d\n", nome, *n);
+	trie_get_element(&t, nome, strlen(nome), &i);
+	printf("[%s] = %d\n", nome, i);
 
 	nome = "bárbara";
-	n = (int*)trie_get_element(&t, nome, strlen(nome));
-	printf("[%s] = %d\n", nome, *n);
+	trie_get_element(&t, nome, strlen(nome), &i);
+	printf("[%s] = %d\n", nome, i);
 
 	nome = "raul";
-	n = (int*)trie_get_element(&t, nome, strlen(nome));
-	printf("[%s] = %d\n", nome, *n);
+	trie_get_element(&t, nome, strlen(nome), &i);
+	printf("[%s] = %d\n", nome, i);
 
 	nome = "tutu";
-	n = (int*)trie_get_element(&t, nome, strlen(nome));
-	printf("[%s] = %d\n", nome, *n);
+	trie_get_element(&t, nome, strlen(nome), &i);
+	printf("[%s] = %d\n", nome, i);
 
 	nome = "boris";
-	n = (int*)trie_get_element(&t, nome, strlen(nome));
-	printf("[%s] = %d\n", nome, *n);
+	trie_get_element(&t, nome, strlen(nome), &i);
+	printf("[%s] = %d\n", nome, i);
 
 	trie_destroy(&t);
 }

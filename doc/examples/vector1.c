@@ -4,8 +4,8 @@
 #define N 20
 
 void print_v(vector_t* v){
-	int i;
-	printf("v(%.2d)-> ", v->buffer_size/v->member_size);
+	size_t i;
+	printf("v(%.2zu)-> ", v->buffer_size/v->member_size);
 
 	for(i=0; i<v->size; i++){
 		int tmp = ((int*)v->data)[i];
@@ -26,9 +26,10 @@ int main()
 	for(i=0; i<N; i++)
 		vector_add(&v, &i);
 
+	print_v(&v);
 	for ( i = 0; i<=N ; i++ ){
+		vector_resize_buffer(&v, N-i);
 		print_v(&v);
-		vector_resize_buffer(&v, N-i-1);
 	}
 
 	vector_destroy(&v);
