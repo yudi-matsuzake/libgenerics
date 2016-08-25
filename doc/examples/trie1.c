@@ -72,4 +72,6 @@ int main()
 	print_lexicography(&t);
 
 	trie_destroy(&t);
+
+	return 0;
 }

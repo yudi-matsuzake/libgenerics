@@ -89,18 +89,22 @@ Checklist
 ---------
 
 
-- [x] queue
+- [ ] queue
 	- [x] enqueue
 	- [x] dequeue
 	- [x] create
 	- [x] destroy
 	- [x] remove
+	- [ ] head\_value
+	- [ ] tail\_value
 - [ ] stack
 	- [x] push
 	- [x] pop
 	- [x] create
 	- [x] destroy
 	- [ ] remove
+	- [ ] top\_value
+	- [ ] bottom\_value
 - [x] trie
 	- [x] create
 	- [x] destroy
@@ -131,4 +135,9 @@ Checklist
 	- [x] add
 	- [x] at
 	- [x] set_elem_at
-- [ ] priority queue
+- [x] priority queue
+	- [x] create
+	- [x] destroy
+	- [x] add
+	- [x] extract
+	- [x] max\_priority

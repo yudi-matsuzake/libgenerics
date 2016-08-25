@@ -16,29 +16,37 @@
  *
  * For more information, please refer to <http://unlicense.org/>
  */
-#ifndef __VECTOR_T_H__
-#define __VECTOR_T_H__
-#include <stdio.h>
+
+#ifndef __PRIORITY_QUEUE_T_H__
+#define __PRIORITY_QUEUE_T_H__
 #include <stdlib.h>
-#include <string.h>
-
 #include "gerror.h"
+#include "vector.h"
 
-typedef struct vector_t {
-	void* data;
+typedef enum{
+	G_PQUEUE_FIRST_PRIORITY = -1,	/* a > b  */
+	G_PQUEUE_EQUAL_PRIORITY,	/* a == b */
+	G_PQUEUE_SECOND_PRIORITY	/* a < b  */
+}queue_priority_t;
+
+typedef int (*compare_function)(void* a, void* b, void* arg);
+
+typedef struct priority_queue_t{
 	size_t size;
-	size_t buffer_size;
 	size_t member_size;
-} vector_t;
 
-gerror_t vector_create (vector_t* v, size_t initial_size, size_t member_size);
-gerror_t vector_destroy (vector_t* v);
-gerror_t vector_resize_buffer (vector_t* v, size_t new_size);
-gerror_t vector_at (vector_t* v, size_t index, void* elem);
-void* vector_ptr_at (vector_t* v, size_t index);
-gerror_t vector_set_elem_at (vector_t* v, size_t index, void* elem);
-gerror_t vector_add (vector_t* v, void* elem);
-void vector_set_min_buf_siz(size_t new_min_buf_size);
-size_t vector_get_min_buf_siz(void);
+	compare_function compare;
+	void* compare_argument;
+	struct vector_t queue;
+} priority_queue_t;
+
+typedef struct priority_queue_t pqueue_t;
+
+gerror_t pqueue_create(	pqueue_t* p, size_t member_size);
+gerror_t pqueue_destroy(pqueue_t* p);
+gerror_t pqueue_set_compare_function(pqueue_t* p, compare_function function, void* argument);
+gerror_t pqueue_add(pqueue_t* p, void* e);
+gerror_t pqueue_max_priority(pqueue_t* p, void* e);
+gerror_t pqueue_extract(pqueue_t* p, void* e);
 
 #endif

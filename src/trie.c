@@ -119,7 +119,8 @@ void trie_destroy_tnode (struct tnode_t* node)
 /** Destroy the members pointed by `t`.
   * The structure is not freed.
   *
-  * @param t pointer to the structure
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCURE in case `t` is a NULL
   */
 gerror_t trie_destroy (struct trie_t* t)
 {

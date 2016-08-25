@@ -21,3 +21,9 @@
 **vector0.c** simple example of using the vector structure;
 
 **vector1.c** simple example of using the vector structure and resize buffer;
+
+**pqueue0.c** simple example of using priority queue structure;
+
+**pqueue1.c** simple example of using priority queue structure and using a custom compare function;
+
+**pqueue1.c** simple example of using priority queue structure and using a custom function compare string;

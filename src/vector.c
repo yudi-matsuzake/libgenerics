@@ -218,3 +218,19 @@ gerror_t vector_add (vector_t* v, void* elem)
 	if(s != GERROR_OK) return s;
 	return GERROR_OK;
 }
+
+
+/** Calculate the pointer at `index` position.
+  *
+  * @param v		a pointer to `vector_t`
+  * @param index	index of the pointer
+  *
+  * @return	a pointer to the `index` element
+  * 		NULL in case of out of bound
+  */
+void* vector_ptr_at (vector_t* v, size_t index)
+{
+	if(index >= v->size || index >= v->buffer_size)
+		return NULL;
+	return v->data + (index*v->member_size);
+}
