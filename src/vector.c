@@ -42,7 +42,7 @@ gerror_t vector_create (vector_t* v, size_t initial_buf_siz, size_t member_size)
 	v->size = 0;
 	v->member_size = member_size;
 	if ( initial_buf_siz < vector_min_siz )
-		v->buffer_size = initial_buf_siz*member_size;
+		v->buffer_size = vector_min_siz*member_size;
 	else
 		v->buffer_size = initial_buf_siz*member_size;
 
