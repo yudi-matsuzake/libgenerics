@@ -113,6 +113,14 @@ Checklist
 	- [x] get element
 	- [x] set element
 - [ ] red-black tree
+	- [x] create
+	- [x] destroy
+	- [x] add element
+	- [x] set compare_function
+	- [ ] remove element
+	- [ ] find element
+	- [ ] find max, min
+- [ ] dict
 - [ ] graph
 	- [x] create
 	- [x] destroy

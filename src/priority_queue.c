@@ -24,24 +24,17 @@
 #define RIGHT(i)  (LEFT(i)+1)
 
 void nswap (void* a, void* b, size_t n);
-int default_compare_function(void* a, void* b, void* arg);
+int pqueue_default_compare_function(void* a, void* b, void* arg);
 void max_heapify(pqueue_t* p, size_t i);
 
 /** Populates the `p` structure and inicialize it.
-  * A priority queue needs a compare_function. The default function
+  * A priority queue needs a pqueue_compare_function. The default function
   * will only work for char, int and long. If you need a double or float
   * you need to implement the compare function and set with the
   * function `pqueue_set_compare_function`
   *
   * @param p		previous allocated pqueue_t struct
   * @param member_size	size in bytes of the indexed elements
-  * @param function	comparison function callback that has
-  * 			the following prototype:
-  * 			int compare(void* a, void* b)
-  * 			the a and b are the arguments
-  * 			returns -1 if `a` has priority BIG than `B`
-  * 			returns 0 if `a` has priority EQUAL than `B`
-  * 			return 1 if `a` has priority LE
   *
   * @return	GERROR_OK in case of success operation;
   * 		GERROR_NULL_STRUCURE in case `p` is a NULL
@@ -50,14 +43,14 @@ gerror_t pqueue_create (pqueue_t* p, size_t member_size)
 {
 	if(!p) return GERROR_NULL_STRUCTURE;
 	p->member_size = member_size;
-	p->compare = default_compare_function;
+	p->compare = pqueue_default_compare_function;
 	p->compare_argument = &p->member_size;
 	vector_create(&p->queue, 0, member_size);
 	return GERROR_OK;
 }
 
-/** Destroy (i.e. desallocates) the `p` structure fields.
-  * TODO: A more datailed description of pqueue_destroy.
+/** Destroy (i.e. deallocates) the `p` structure fields.
+  * TODO: A more detailed description of pqueue_destroy.
   *
   * @param p	previous allocated pqueue_t struct
   *
@@ -82,15 +75,15 @@ gerror_t pqueue_destroy (pqueue_t* p)
   * 			the following prototype:
   * 			int compare(void* a, void* b)
   * 			the a and b are the arguments
-  * 			returns -1 if `a` has priority BIG than `B`
-  * 			returns 0 if `a` has priority EQUAL than `B`
-  * 			return 1 if `a` has priority LE
-  * @param argument	allocated pqueue_t struct
+  * 			returns -1 if `a` has priority BIG than `b`
+  * 			returns 0 if `a` has priority EQUAL than `b`
+  * 			return 1 if `a` has priority LESS than `b`
+  * @param argument	pointer to the argument to the comparison function
   *
   * @return	GERROR_OK in case of success operation;
   * 		GERROR_NULL_STRUCURE in case `t` is a NULL
   */
-gerror_t pqueue_set_compare_function (pqueue_t* p, compare_function function, void* argument)
+gerror_t pqueue_set_compare_function (pqueue_t* p, pqueue_compare_function function, void* argument)
 {
 	if(!p) return GERROR_NULL_STRUCTURE;
 	p->compare = function;
@@ -196,7 +189,7 @@ void nswap (void* a, void* b, size_t n)
  * the default comparison function. Just compare
  * like to long
  */
-int default_compare_function(void* a, void* b, void* arg)
+int pqueue_default_compare_function(void* a, void* b, void* arg)
 {
 	size_t size = *(size_t*)arg;
 

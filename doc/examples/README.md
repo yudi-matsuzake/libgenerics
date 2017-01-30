@@ -27,3 +27,5 @@
 **pqueue1.c** simple example of using priority queue structure and using a custom compare function;
 
 **pqueue1.c** simple example of using priority queue structure and using a custom function compare string;
+
+**rbtree0.c** simple example of using rbtree and the add function; there is an in-order print example function;
