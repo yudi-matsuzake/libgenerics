@@ -59,10 +59,18 @@ typedef struct redblacknode_t rbnode_t;
 
 gerror_t rbtree_create(rbtree_t* rbt, size_t member_size);
 gerror_t rbtree_destroy(rbtree_t* rbt);
+
 gerror_t rbtree_set_compare_function(	rbtree_t* rbt,
 					rbtree_compare_function function,
 					void* argument);
 gerror_t rbtree_add(rbtree_t* rbt, void* elem);
-gerror_t rbtree_remove(rbtree_t* rbt, void* elem);
+gerror_t rbtree_remove_item(rbtree_t* rbt, void* elem);
+gerror_t rbtree_remove_node(rbtree_t* rbt, rbnode_t* node);
+
+gerror_t rbtree_min_node(rbtree_t* rbt, rbnode_t** node);
+gerror_t rbtree_min_value(rbtree_t* rbt, void* elem);
+gerror_t rbtree_max_node(rbtree_t* rbt, rbnode_t** node);
+gerror_t rbtree_max_value(rbtree_t* rbt, void* elem);
+gerror_t rbtree_find_node(rbtree_t* rbt, void* elem, rbnode_t** node);
 
 #endif

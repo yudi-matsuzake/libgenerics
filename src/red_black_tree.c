@@ -26,12 +26,23 @@ typedef enum{
 
 rbnode_t* rbnode_destroy(rbnode_t* node);
 
+/*
+ * auxiliar function prototypes to insert
+ */
 void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node);
 void fix_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l);
 rbnode_t* create_node(rbtree_t* rbt, void* elem);
 void left_rotate(rbtree_t* rbt, rbnode_t* node);
 void right_rotate(rbtree_t* rbt, rbnode_t* node);
 
+/*
+ * auxiliar function prototypes to delete
+ */
+void rbtree_transplant(rbtree_t* rbt, rbnode_t* u, rbnode_t* v);
+
+/*
+ * default compare function prototype
+ */
 int rbtree_default_compare_function(void* a, void* b, void* arg);
 
 /** Populates the `rbt` structure and inicialize it.
@@ -168,6 +179,163 @@ gerror_t rbtree_add(rbtree_t* rbt, void* elem)
 	return GERROR_OK;
 }
 
+/** Finds and remove the first element that match with `elem`.
+  *
+  * @param rbt		previous allocated rbtree_t structure
+  * @param elem		pointer element to be removed
+  *
+  * @return	GERROR_OK in case of sucess operation;
+  * 		GERROR_NULL_STRUCTURE in case `rbt` is null;
+  * 		GERROR_NULL_ELEMENT_POINTER in case `elem` is
+  * 		pointing to null;
+  * 		GERROR_TRY_REMOVE_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  *
+  */
+gerror_t rbtree_remove_item (rbtree_t* rbt, void* elem)
+{
+	if(!rbt)	return GERROR_NULL_STRUCTURE;
+	if(!elem)	return GERROR_NULL_ELEMENT_POINTER;
+	if(!rbt->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
+
+	rbnode_t* node = NULL;
+
+	if(rbtree_find_node(rbt, elem, &node) == GERROR_OK)
+		return rbtree_remove_node(rbt, node);
+
+	return GERROR_REMOVE_ELEMENT_NOT_FOUNDED;
+}
+
+/** Removes the node `node` of the `rbt` tree.
+  *
+  * @param rbt	previous allocated rbtree_t structure
+  * @param node	pointer to a `rbnode_t` structure.
+  *
+  * @return	GERROR_OK in case of sucess operation;
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		GERROR_NULL_ELEMENT_POINTER in case `elem` is
+  * 		pointing to null;
+  * 		GERROR_TRY_REMOVE_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  */
+gerror_t rbtree_remove_node (rbtree_t* rbt, rbnode_t* node)
+{
+	if(!rbt)	return GERROR_NULL_STRUCTURE;
+	if(!node)	return GERROR_NULL_ELEMENT_POINTER;
+	if(!rbt->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
+
+	return GERROR_OK;
+}
+
+/** Find a node with the value pointed by `elem` and write the pointer to
+  * `node`.
+  *
+  * @param rbt		previous allocated rbtree_t struct
+  * @param elem		pointer element to find
+  * @param node		pointer to the return node pointer;
+  * 			this pointer could be null
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_ELEMENT_POINTER in case `elem` is
+  * 		null;
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		By the end of the function, the `*node` will point
+  * 		to the found element or NULL otherwise
+  */
+gerror_t rbtree_find_node (rbtree_t* rbt, void* elem, rbnode_t** node)
+{
+	if(!rbt)	return GERROR_NULL_STRUCTURE;
+	if(!elem)	return GERROR_NULL_ELEMENT_POINTER;
+
+	rbnode_t* n = rbt->root;
+	*node = NULL;
+
+	while(n != NULL){
+		rbcomp_t result = rbt->compare(elem, n->data, rbt->compare_argument);
+
+		switch(result){
+		case G_RB_EQUAL:
+			*node = n;
+			return GERROR_OK;
+			break;
+		case G_RB_FIRST_IS_GREATER:
+			n = n->right;
+			break;
+		case G_RB_FIRST_IS_SMALLER:
+			n = n->left;
+			break;
+		}
+	}
+
+	return GERROR_ELEMENT_NOT_FOUNDED;
+}
+
+/** Find the minimal value in rbt and write the pointer to
+  * `node`.
+  *
+  * @param rbt		previous allocated rbtree_t struct
+  * @param node		pointer to the return node pointer;
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		GERROR_NULL_RETURN_POINTER in case that `node`
+  * 		By the end of the function, the `*node` will point
+  * 		to the found element or NULL otherwise
+  */
+gerror_t rbtree_min_node (rbtree_t* rbt, rbnode_t** node)
+{
+	if(!rbt)	return GERROR_NULL_STRUCTURE;
+	if(!rbt->size)	return GERROR_EMPTY_STRUCTURE;
+	if(!node)	return GERROR_NULL_RETURN_POINTER;
+
+	rbnode_t* n = rbt->root;
+	rbnode_t* temp_node = rbt->root;
+
+	while(n != NULL){
+		temp_node = n;
+		n = n->left;
+	}
+
+	*node = temp_node;
+
+	return GERROR_OK;
+}
+
+/** Find the maximal value in rbt and write the pointer to
+  * `node`.
+  *
+  * @param rbt		previous allocated rbtree_t struct
+  * @param node		pointer to the return node pointer;
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		GERROR_NULL_RETURN_POINTER in case that `node`
+  * 		By the end of the function, the `*node` will point
+  * 		to the found element or NULL otherwise
+  */
+gerror_t rbtree_max_node (rbtree_t* rbt, rbnode_t** node)
+{
+	if(!rbt)	return GERROR_NULL_STRUCTURE;
+	if(!rbt->size)	return GERROR_EMPTY_STRUCTURE;
+	if(!node)	return GERROR_NULL_RETURN_POINTER;
+
+	rbnode_t* n = rbt->root;
+	rbnode_t* temp_node = rbt->root;
+
+	while(n != NULL){
+		temp_node = n;
+		n = n->right;
+	}
+
+	*node = temp_node;
+
+	return GERROR_OK;
+}
+
 /*
  * destroy a node and it's children's
  * recursively
@@ -181,6 +349,66 @@ rbnode_t* rbnode_destroy(rbnode_t* node)
 		free(node);
 	}
 	return NULL;
+}
+
+/** Find the minimal value in rbt and write the value to
+  * `elem`.
+  *
+  * @param rbt		previous allocated rbtree_t struct
+  * @param elem		pointer to a local in memory to write
+  * 			the minimal value
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		GERROR_NULL_RETURN_POINTER in case that `node`
+  * 		By the end of the function, the `*node` will point
+  * 		to the found element or NULL otherwise
+  */
+gerror_t rbtree_min_value (rbtree_t* rbt, void* elem)
+{
+	if(!elem) return GERROR_NULL_RETURN_POINTER;
+
+	rbnode_t* node;
+	gerror_t result = rbtree_min_node(rbt, &node);
+
+	if( result != GERROR_OK )
+		return result;
+
+	memcpy(elem, node->data, rbt->member_size);
+
+	return GERROR_OK;
+}
+
+/** Find the maximal value in rbt and write the value to
+  * `elem`.
+  *
+  * @param rbt		previous allocated rbtree_t struct
+  * @param elem		pointer to a local in memory to write
+  * 			the maximal value
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_EMPTY_STRUCTURE in case the
+  * 		`rbt` structure is empty
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL;
+  * 		GERROR_NULL_RETURN_POINTER in case that `node`
+  * 		By the end of the function, the `*node` will point
+  * 		to the found element or NULL otherwise
+  */
+gerror_t rbtree_max_value (rbtree_t* rbt, void* elem)
+{
+	if(!elem) return GERROR_NULL_RETURN_POINTER;
+
+	rbnode_t* node;
+	gerror_t result = rbtree_max_node(rbt, &node);
+
+	if( result != GERROR_OK )
+		return result;
+
+	memcpy(elem, node->data, rbt->member_size);
+
+	return GERROR_OK;
 }
 
 /*
@@ -383,4 +611,19 @@ int rbtree_default_compare_function(void* a, void* b, void* arg)
 		break;
 	}
 	return (la > lb) - (la < lb);
+}
+
+/*
+ * transplant function, transplants node u by node v in the tree
+ */
+void rbtree_transplant(rbtree_t* rbt, rbnode_t* u, rbnode_t* v)
+{
+	if(u->parent == NULL)
+		rbt->root = v;
+	else if(u == u->parent->left)
+		u->parent->left = v;
+	else
+		u->parent->right = v;
+
+	v->parent = u->parent;
 }

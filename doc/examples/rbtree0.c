@@ -60,6 +60,9 @@ int main()
 	rbtree_create(&rbt, sizeof(int));
 	int i;
 
+	/*
+	 * insert
+	 */
 	int to_insert[N];
 	for( i = 0; i<N; i++ )
 		to_insert[i] = i;
@@ -74,7 +77,41 @@ int main()
 	}
 	print_rbt ( rbt.root, 0 );
 
-	int n = 0;
+	/*
+	 * search functions
+	 */
+	int n;
+	rbnode_t* node;
+	n = rand()%N;
+
+	gerror_t g;
+	printf("finding %d\n", n);
+	if(( g = rbtree_find_node(&rbt, &n, &node) ) == GERROR_OK){
+		printf("%d found in node addr [%p]\n", n, node);
+		printf("color: %s\n", (node->color == G_RB_RED)?
+							"red":"black");
+		if(node->parent) printf("father: %d\n", *(int*)node->parent->data);
+		else printf("father: null\n");
+	}else{
+		printf("%s\n", gerror_to_str(g));
+	}
+
+	printf("min value: ");
+	if(( g = rbtree_min_value(&rbt, &n) ) == GERROR_OK)
+		printf("%d\n", n);
+	else
+		printf("%s\n", gerror_to_str(g));
+
+	printf("max value: ");
+	if(( g = rbtree_max_value(&rbt, &n) ) == GERROR_OK)
+		printf("%d\n", n);
+	else
+		printf("%s\n", gerror_to_str(g));
+
+	/*
+	 * verify tree
+	 */
+	n=0;
 	printf("It %s a valid red-black tree\n", (is_a_valid_rbtree((rbt.root), &n))?"is":"is not");
 
 	rbtree_destroy( &rbt );
