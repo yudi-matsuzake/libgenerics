@@ -35,6 +35,8 @@ gerror_t vector_create (vector_t* v, size_t initial_size, size_t member_size);
 gerror_t vector_destroy (vector_t* v);
 gerror_t vector_resize_buffer (vector_t* v, size_t new_size);
 gerror_t vector_at (vector_t* v, size_t index, void* elem);
+gerror_t vector_append (vector_t* v0, vector_t* v1);
+gerror_t vector_append_buffer (vector_t* v, void* buffer, size_t size);
 void* vector_ptr_at (vector_t* v, size_t index);
 gerror_t vector_set_elem_at (vector_t* v, size_t index, void* elem);
 gerror_t vector_add (vector_t* v, void* elem);

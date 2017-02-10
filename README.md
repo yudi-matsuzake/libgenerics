@@ -135,6 +135,8 @@ Checklist
 	- [x] add
 	- [x] at
 	- [x] set_elem_at
+	- [x] append_vector
+	- [x] append_buffer
 - [x] priority queue
 	- [x] create
 	- [x] destroy

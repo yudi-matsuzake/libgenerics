@@ -219,7 +219,6 @@ gerror_t vector_add (vector_t* v, void* elem)
 	return GERROR_OK;
 }
 
-
 /** Calculate the pointer at `index` position.
   *
   * @param v		a pointer to `vector_t`
@@ -233,4 +232,44 @@ void* vector_ptr_at (vector_t* v, size_t index)
 	if(index >= v->size || index >= v->buffer_size)
 		return NULL;
 	return v->data + (index*v->member_size);
+}
+
+/** Appends the vector `v1` to the vector `v0`.
+  *
+  * @param v0	vector structure
+  * @param v1	vector structure to be appended
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCTURE in case `v` is a NULL
+  */
+gerror_t vector_append (vector_t* v0, vector_t* v1)
+{
+	if(!v0 || !v1) return GERROR_NULL_STRUCTURE;
+	if(v0->member_size != v1->member_size) return GERROR_INCOMPATIBLE_VECTOR_APPEND_SIZE;
+
+	vector_append_buffer(v0, v1->data, v1->size);
+
+	return GERROR_OK;
+}
+
+/** Appends `size` members pointed by `buffer` in `v`.
+  *
+  * @param v		a pointer to `vector_t` structure
+  * @param buffer	pointer to the elements with the same size to `v->member_size`
+  *			to be appended
+  * @param size		number of elements pointed by the `buffer`
+  *
+  * @return	GERROR_OK in case of success operation;
+  * 		GERROR_NULL_STRUCTURE in case `v` is a NULL
+  */
+gerror_t vector_append_buffer (vector_t* v, void* buffer, size_t size)
+{
+	if(!v) return GERROR_NULL_STRUCTURE;
+	if(!buffer) return GERROR_NULL_POINTER_TO_BUFFER;
+
+	vector_resize_buffer (v, v->size + size);
+	memcpy(v->data + (v->size*v->member_size), buffer, size*v->member_size);
+	v->size += size;
+
+	return GERROR_OK;
 }

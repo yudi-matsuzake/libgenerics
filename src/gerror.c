@@ -23,9 +23,11 @@ char* gerror_to_string[GERROR_N_ERROR] = {
 	"Null pointer to structure",
 	"Null pointer to the head of structure",
 	"Null pointer to the node",
+	"Null pointer to the buffer",
 	"Attempt to remove an element but the structure is empty",
 	"Attempt to add a edge with inexistent vertex",
 	"Attempt to access a position out of the container or buffer",
+	"Attempt to append two vectors with different member_size"
 };
 
 char* gerror_to_str (gerror_t g)
