@@ -33,7 +33,8 @@ typedef int (*rbtree_compare_function)(void* a, void *b, void* arg);
 
 typedef enum {
 	G_RB_RED,
-	G_RB_BLACK
+	G_RB_BLACK,
+	G_RB_DOUBLE_BLACK,
 } rbcolor_t;
 
 typedef struct redblacknode_t {

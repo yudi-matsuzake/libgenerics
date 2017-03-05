@@ -30,7 +30,7 @@ rbnode_t* rbnode_destroy(rbnode_t* node);
  * auxiliar function prototypes to insert
  */
 void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node);
-void fix_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l);
+void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l);
 rbnode_t* create_node(rbtree_t* rbt, void* elem);
 void left_rotate(rbtree_t* rbt, rbnode_t* node);
 void right_rotate(rbtree_t* rbt, rbnode_t* node);
@@ -39,6 +39,14 @@ void right_rotate(rbtree_t* rbt, rbnode_t* node);
  * auxiliar function prototypes to delete
  */
 void rbtree_transplant(rbtree_t* rbt, rbnode_t* u, rbnode_t* v);
+void rbtree_delete_fixup(rbtree_t* rbt, rbnode_t* node);
+int rbtree_identify_case(rbnode_t* node, rbc_t* side);
+rbnode_t* rbtree_create_double_black();
+rbnode_t* rbtree_find_minimal_node(rbnode_t* node);
+void rbtree_remove_double_black(rbtree_t* rbt, rbnode_t* db);
+int rbnode_is_red(rbnode_t* node);
+int rbnode_is_black(rbnode_t* node);
+
 
 /*
  * default compare function prototype
@@ -223,6 +231,93 @@ gerror_t rbtree_remove_node (rbtree_t* rbt, rbnode_t* node)
 	if(!rbt)	return GERROR_NULL_STRUCTURE;
 	if(!node)	return GERROR_NULL_ELEMENT_POINTER;
 	if(!rbt->size)	return GERROR_TRY_REMOVE_EMPTY_STRUCTURE;
+
+	rbnode_t*	to_delete	= node;
+	rbnode_t*	to_fix		= NULL;
+	rbcolor_t	original_color	= node->color;
+
+	/*
+	 * if the node has no children
+	 */
+	if(node->right == NULL && node->left == NULL){
+		to_fix = rbtree_create_double_black();
+		rbtree_transplant(rbt, node, to_fix);
+
+	/*
+	 * if the node does not have the right child
+	 */
+	}else if(node->left == NULL){
+		to_fix = node->right;
+		rbtree_transplant(rbt, node, node->right);
+
+	/*
+	 * if the node does not have the left child
+	 */
+	}else if(node->right == NULL){
+		to_fix = node->left;
+		rbtree_transplant(rbt, node, node->left);
+
+	/*
+	 * if the node has both children
+	 */
+	}else{
+
+		/*
+		 * find the minimal node in the right subtree
+		 */
+		to_delete = rbtree_find_minimal_node(node->right);
+		original_color = to_delete->color;
+
+		/*
+		 * create double black node if
+		 * the minimal node has no children
+		 * and point `to_fix` to the right
+		 * child of `to_delete`
+		 *
+		 * this is because `to_fix` needs
+		 * to points where the node was removed
+		 * for the fixup function
+		 */
+		if(to_delete->right == NULL){
+			to_fix = rbtree_create_double_black();
+			to_delete->right = to_fix;
+			to_fix->parent = to_delete;
+		}else{
+			to_fix = to_delete->right;
+		}
+
+		/*
+		 * linking
+		 */
+		if(to_delete->parent == node){
+			to_fix->parent = to_delete;
+		}else{
+			rbtree_transplant(rbt, to_delete, to_delete->right);
+			to_delete->right = node->right;
+			to_delete->right->parent = to_delete;
+		}
+
+		rbtree_transplant(rbt, node, to_delete);
+		to_delete->left = node->left;
+		to_delete->left->parent = to_delete;
+		to_delete->color = node->color;
+
+
+	}
+
+	if(original_color == G_RB_BLACK)
+		rbtree_delete_fixup(rbt, to_fix);
+
+	/*
+	 * delete the double black node
+	 */
+	if(to_fix != NULL && to_fix->color == G_RB_DOUBLE_BLACK)
+		rbtree_remove_double_black(rbt, to_fix);
+
+	free(node->data);
+	free(node);
+
+	rbt->size--;
 
 	return GERROR_OK;
 }
@@ -429,22 +524,22 @@ void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node)
 			rbnode_t* uncle = node->parent->parent->right;
 
 			if( uncle != NULL && uncle->color == G_RB_RED )
-				fix_case(rbt, &node, uncle, 0, 1);
+				fix_insert_case(rbt, &node, uncle, 0, 1);
 			else if(node == node->parent->right)
-				fix_case(rbt, &node, uncle, 1, 1);
+				fix_insert_case(rbt, &node, uncle, 1, 1);
 			else if(node == node->parent->left)
-				fix_case(rbt, &node, uncle, 2, 1);
+				fix_insert_case(rbt, &node, uncle, 2, 1);
 		}else{
 			/*
 			 * so the uncle is the left child
 			 */
 			rbnode_t* uncle = node->parent->parent->left;
 			if( uncle != NULL && uncle->color == G_RB_RED )
-				fix_case(rbt, &node, uncle, 0, 0);
+				fix_insert_case(rbt, &node, uncle, 0, 0);
 			else if(node == node->parent->left)
-				fix_case(rbt, &node, uncle, 1, 0);
+				fix_insert_case(rbt, &node, uncle, 1, 0);
 			else if(node == node->parent->right)
-				fix_case(rbt, &node, uncle, 2, 0);
+				fix_insert_case(rbt, &node, uncle, 2, 0);
 		}
 	}
 
@@ -455,7 +550,7 @@ void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node)
  * receives a rbtree, a node and a case `c` and fix
  * the case `c`. `l` is whether the father is the left child
  */
-void fix_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l)
+void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l)
 {
 	switch(c){
 	/*
@@ -625,5 +720,278 @@ void rbtree_transplant(rbtree_t* rbt, rbnode_t* u, rbnode_t* v)
 	else
 		u->parent->right = v;
 
-	v->parent = u->parent;
+	if(v) v->parent = u->parent;
+}
+
+
+/*
+ * returns 1 if the node is red and 0 otherwise
+ */
+int rbnode_is_red(rbnode_t* node)
+{
+	return !rbnode_is_black(node);
+}
+
+/*
+ * returns 1 if the node is black and 0 otherwise
+ */
+int rbnode_is_black(rbnode_t* node)
+{
+	return node == NULL || node->color != G_RB_RED;
+}
+
+/*
+ * Classic red n black delete fixup function
+ */
+void rbtree_delete_fixup(rbtree_t* rbt, rbnode_t* node)
+{
+
+	while(node != rbt->root && rbnode_is_black(node)){
+
+		rbc_t side;
+
+		int c;
+		switch( c = rbtree_identify_case(node, &side) ){
+		case 2:
+			/*
+			 * parent becomes red
+			 * sibling becomes black
+			 * left rotate the parent
+			 * "no" push the problem up
+			 * "no" between quotes because
+			 * the problem is pushed up only for
+			 * a non-double-black node
+			 */
+			if(side == RB_LEFT){
+				node->parent->color = G_RB_RED;
+				node->parent->right->color = G_RB_BLACK;
+				left_rotate(rbt, node->parent);
+
+				if(node->parent->right == NULL)
+					node = node->parent;
+
+			}else{
+				node->parent->color = G_RB_RED;
+				node->parent->left->color = G_RB_BLACK;
+				right_rotate(rbt, node->parent);
+
+				if(node->parent->left == NULL)
+					node = node->parent;
+			}
+
+			break;
+
+		case 3:
+
+			/*
+			 * sibling becomes red
+			 * push the problem upwards
+			 */
+			if(side == RB_LEFT)
+				node->parent->right->color = G_RB_RED;
+			else
+				node->parent->left->color = G_RB_RED;
+
+			node = node->parent;
+			break;
+		case 4:
+			/*
+			 * parent becomes black
+			 * sibling becomes red
+			 */
+			node->parent->color = G_RB_BLACK;
+
+			if(side == RB_LEFT){
+				if(node->parent->right != NULL)
+					node->parent->right->color = G_RB_RED;
+			}
+			else{
+				if(node->parent->left != NULL)
+					node->parent->left->color = G_RB_RED;
+			}
+
+			/*this is a terminal case*/
+			node = rbt->root;
+			break;
+		case 5:
+			/*
+			 * sibling becomes black
+			 * siblings's left child becomes red
+			 * push the problem upwards
+			 * right-rotation on the sibling
+			 */
+			if(side == RB_LEFT){
+				node->parent->right->color = G_RB_RED;
+				node->parent->right->left->color = G_RB_BLACK;
+				right_rotate(rbt, node->parent->right);
+			}else{
+				node->parent->left->color = G_RB_RED;
+				node->parent->left->right->color = G_RB_BLACK;
+				left_rotate(rbt, node->parent->left);
+			}
+
+			break;
+		case 6:
+			/*
+			 * sibling take the color of the parent
+			 * parent becomes black
+			 * right child of the sibling becomes black
+			 * left-rotate in the parent
+			 */
+			if(side == RB_LEFT){
+				node->parent->right->color = node->parent->color;
+				node->parent->color = G_RB_BLACK;
+				node->parent->right->right->color = G_RB_BLACK;
+				left_rotate(rbt, node->parent);
+			}else{
+				node->parent->left->color = node->parent->color;
+				node->parent->color = G_RB_BLACK;
+				node->parent->left->left->color = G_RB_BLACK;
+				right_rotate(rbt, node->parent);
+			}
+
+			/*this is a terminal case*/
+			node = rbt->root;
+			break;
+		case 0:
+			node = rbt->root;
+			break;
+		}
+
+	}
+
+	if(node->color != G_RB_DOUBLE_BLACK)
+		node->color = G_RB_BLACK;
+
+}
+
+
+/*
+ * allocates and populate a double black node based
+ * by `node` and return the pointer
+ */
+rbnode_t* rbtree_create_double_black()
+{
+	rbnode_t* db = (rbnode_t*) malloc(sizeof(rbnode_t));
+
+	db->parent	= NULL;
+	db->right	= NULL;
+	db->left	= NULL;
+	db->data	= NULL;
+	db->color	= G_RB_DOUBLE_BLACK;
+
+	return db;
+}
+
+/*
+ * remove and deallocates the double_black node
+ */
+void rbtree_remove_double_black(rbtree_t* rbt, rbnode_t* db)
+{
+	if(db == rbt->root){
+		rbt->root = NULL;
+	}else{
+		if(db->parent->left == db){
+			db->parent->left = NULL;
+		}else{
+			db->parent->right = NULL;
+		}
+	}
+
+	free(db);
+}
+
+/*
+ * give a node, find a minimal of the subtree
+ */
+rbnode_t* rbtree_find_minimal_node(rbnode_t* node)
+{
+	rbnode_t* minimal = NULL;
+	while(node != NULL){
+		minimal = node;
+		node = node->left;
+	}
+
+	return minimal;
+}
+
+/*
+ * identify the case to fix
+ */
+int rbtree_identify_case (rbnode_t* node, rbc_t* side)
+{
+	if(node == node->parent->left){
+		*side = RB_LEFT;
+		rbnode_t* sibling = node->parent->right;
+
+		if(rbnode_is_black(node->parent)){
+
+			if(rbnode_is_red(sibling)){
+				return 2;
+			}else{
+				if(rbnode_is_black(sibling->right)){
+					if(rbnode_is_black(sibling->left))
+						return 3;
+					else
+						return 5;
+				}
+
+				if(rbnode_is_red(sibling->right))
+					return 6;
+			}
+
+		}else{
+			if(rbnode_is_black(sibling)){
+				if( sibling == NULL ||
+				   (rbnode_is_black(sibling->right) &&
+				    rbnode_is_black(sibling->left))){
+					return 4;
+				}else if(rbnode_is_red(sibling->left) &&
+					 rbnode_is_black(sibling->right)){
+					return 5;
+				}else if(rbnode_is_red(sibling->right)){
+					return 6;
+				}
+			}
+		}
+
+	}else{
+		*side = RB_RIGHT;
+
+		rbnode_t* sibling = node->parent->left;
+
+		if(rbnode_is_black(node->parent)){
+
+			if(rbnode_is_red(sibling)){
+				return 2;
+			}else{
+				if(rbnode_is_black(sibling->left)){
+					if(rbnode_is_black(sibling->right))
+						return 3;
+					else
+						return 5;
+				}
+
+				if(rbnode_is_red(sibling->left))
+					return 6;
+			}
+
+		}else{
+			if(rbnode_is_black(sibling)){
+				if( sibling == NULL ||
+				   (rbnode_is_black(sibling->right) &&
+				    rbnode_is_black(sibling->left))){
+					return 4;
+				}else if(rbnode_is_red(sibling->right) &&
+					 rbnode_is_black(sibling->left)){
+					return 5;
+				}else if(rbnode_is_red(sibling->left)){
+					return 6;
+				}
+			}
+		}
+
+	}
+
+	return 0;
 }

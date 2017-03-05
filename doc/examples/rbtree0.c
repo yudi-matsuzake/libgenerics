@@ -24,23 +24,28 @@ void print_rbt (rbnode_t* node, int t)
 	}
 }
 
-int is_a_valid_rbtree(rbnode_t* node, int* count)
+int is_a_valid_rbtree(rbnode_t* node, int n, int* count)
 {
-	if( node == NULL ){
-		int left_count;
-		int right_count;
-		if(!is_a_valid_rbtree(node->left, &left_count)){
-			return 0;
-		}
-		if(!is_a_valid_rbtree(node->right, &right_count)){
-			return 0;
-		}
 
-		*count += left_count + right_count + (node->color == G_RB_BLACK);
-		return left_count == right_count;
+	if(node){
+		int im_black = node->color == G_RB_BLACK;
+		n += im_black;
+
+		if(!is_a_valid_rbtree(node->left, n, count))
+			return 0;
+
+		if(!is_a_valid_rbtree(node->right, n, count))
+			return 0;
+
+		return 1;
 	}
 
-	return 1;
+	n++;
+	if(*count == 0){
+		*count = n;
+	}
+
+	return n == *count;
 }
 
 void swap(int* a, int* b)
@@ -58,6 +63,7 @@ int main()
 	rbtree_t rbt;
 
 	rbtree_create(&rbt, sizeof(int));
+
 	int i;
 
 	/*
@@ -111,8 +117,8 @@ int main()
 	/*
 	 * verify tree
 	 */
-	n=0;
-	printf("It %s a valid red-black tree\n", (is_a_valid_rbtree((rbt.root), &n))?"is":"is not");
+	n = 0;
+	printf("It %s a valid red-black tree\n", (is_a_valid_rbtree(rbt.root, 0, &n))?"is":"is not");
 
 	rbtree_destroy( &rbt );
 

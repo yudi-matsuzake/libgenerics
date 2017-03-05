@@ -1,0 +1,62 @@
+# TODO
+
+- [ ] queue
+	- [x] enqueue
+	- [x] dequeue
+	- [x] create
+	- [x] destroy
+	- [x] remove
+	- [ ] head\_value
+	- [ ] tail\_value
+- [ ] stack
+	- [x] push
+	- [x] pop
+	- [x] create
+	- [x] destroy
+	- [ ] remove
+	- [ ] top\_value
+	- [ ] bottom\_value
+- [x] trie
+	- [x] create
+	- [x] destroy
+	- [x] add element
+	- [x] remove element
+	- [x] get element
+	- [x] set element
+- [x] red-black tree
+	- [x] create
+	- [x] destroy
+	- [x] add element
+	- [x] set compare_function
+	- [x] remove element
+	- [x] find element
+	- [x] find max, min
+- [ ] dict
+- [ ] graph
+	- [x] create
+	- [x] destroy
+	- [x] add edge by index
+	- [ ] add edge by labels
+	- [x] add label
+	- [x] set label
+	- [ ] add vertex
+	- [ ] remove edge
+	- [ ] remove vertex
+	- [ ] algorithms
+		- [ ] depth first search 
+		- [ ] breadth first search
+		- [ ] euclidean path
+		- [ ] dijkstra algorithm
+- [x] vector
+	- [x] create
+	- [x] destroy
+	- [x] resize
+	- [x] add
+	- [x] at
+	- [x] set_elem_at
+- [x] priority queue
+	- [x] create
+	- [x] destroy
+	- [x] add
+	- [x] extract
+	- [x] max\_priority
