@@ -29,22 +29,22 @@ typedef enum{
 	G_PQUEUE_SECOND_PRIORITY	/* a < b  */
 }queue_priority_t;
 
-typedef int (*compare_function)(void* a, void* b, void* arg);
+typedef int (*pqueue_compare_function)(void* a, void* b, void* arg);
 
 typedef struct priority_queue_t{
 	size_t size;
 	size_t member_size;
 
-	compare_function compare;
+	pqueue_compare_function compare;
 	void* compare_argument;
 	struct vector_t queue;
 } priority_queue_t;
 
 typedef struct priority_queue_t pqueue_t;
 
-gerror_t pqueue_create(	pqueue_t* p, size_t member_size);
+gerror_t pqueue_create(pqueue_t* p, size_t member_size);
 gerror_t pqueue_destroy(pqueue_t* p);
-gerror_t pqueue_set_compare_function(pqueue_t* p, compare_function function, void* argument);
+gerror_t pqueue_set_compare_function(pqueue_t* p, pqueue_compare_function function, void* argument);
 gerror_t pqueue_add(pqueue_t* p, void* e);
 gerror_t pqueue_max_priority(pqueue_t* p, void* e);
 gerror_t pqueue_extract(pqueue_t* p, void* e);
