@@ -42,3 +42,19 @@ char* gerror_to_str (gerror_t g)
 
 	return NULL;
 }
+
+void gerror_abort_message(
+		gerror_t g,
+		const char* call,
+		const char* file,
+		int line_number)
+{
+	fprintf(stderr,	"\ng_assert error in %s:%d\n"
+			"%s: %s\n",
+			file,
+			line_number,
+			call,
+			gerror_to_str(g));
+
+	exit(EXIT_FAILURE);
+}

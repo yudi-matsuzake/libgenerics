@@ -19,6 +19,7 @@
 #ifndef __GERROR_H__
 #define __GERROR_H__
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef enum gerror_t{
 	GERROR_OK,
@@ -39,5 +40,25 @@ typedef enum gerror_t{
 } gerror_t;
 
 char* gerror_to_str (gerror_t g);
+
+void gerror_abort_message (
+		gerror_t g,
+		const char* call,
+		const char* file,
+		int line_number);
+
+#define _g_assert(X, F, LINE)			\
+{						\
+	gerror_t __gerror__;			\
+	if((__gerror__ = X) != GERROR_OK){	\
+		gerror_abort_message(		\
+				__gerror__,	\
+				#X,		\
+				F,		\
+				LINE);		\
+	}					\
+}
+
+#define g_assert(X) _g_assert(X, __FILE__, __LINE__)
 
 #endif

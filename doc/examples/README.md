@@ -34,4 +34,8 @@
 
 **rbtree2.c** example using rbtree function with a custom compare function;
 
-**rbtree3.c** example using rbtree with manually creation; It's useful for debug purpose.
+**rbtree3.c** example using rbtree with manually creation; It's useful for debug purpose;
+
+**g_assert0.c** example using g_assert for debuging errors and receive a more descriptive error message;
+
+**g_assert1.c** example using g_assert for debuging errors and receive a more descriptive error message;
