@@ -39,3 +39,5 @@
 **g_assert0.c** example using g_assert for debuging errors and receive a more descriptive error message;
 
 **g_assert1.c** example using g_assert for debuging errors and receive a more descriptive error message;
+
+**map0.c** simple example of using map;
