@@ -38,6 +38,12 @@ int main()
 	}
 
 	randomize(r);
+	for(i=0; i<N/2; i++){
+		printf("overwrite mapping %ld -> %ld\n", r[i], i);
+		map_insert(&m, &r[i], &i);
+	}
+
+	randomize(r);
 	for(i = 0; i<N/2; i++){
 		printf("removing... %ld\n", r[i]);
 		map_remove(&m, &r[i], NULL);

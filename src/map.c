@@ -44,10 +44,12 @@ gerror_t map_create (struct map_t* m, size_t key_size, size_t member_size)
 
 	m->key_size = key_size;
 	m->member_size = member_size;
-	gerror_t g = rbtree_create(&m->map, key_size + member_size);
 
+	gerror_t g = rbtree_create(&m->map, key_size + member_size);
 	if(g != GERROR_OK)
 		return g;
+
+	g = rbtree_set_flags(&m->map, G_RB_EQUAL_OVERRIDE);
 
 	return rbtree_set_compare_function(&m->map, map_default_compare_function, m);
 }

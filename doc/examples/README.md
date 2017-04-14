@@ -36,8 +36,12 @@
 
 **rbtree3.c** example using rbtree with manually creation; It's useful for debug purpose;
 
+**rbtree4.c** example using rbtree changing the internal flags;
+
 **g_assert0.c** example using g_assert for debuging errors and receive a more descriptive error message;
 
 **g_assert1.c** example using g_assert for debuging errors and receive a more descriptive error message;
 
 **map0.c** simple example of using map;
+
+**map1.c** example of using map with a custom compare function.

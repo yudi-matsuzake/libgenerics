@@ -31,6 +31,13 @@
 	- [x] remove element
 	- [x] find element
 	- [x] find max, min
+- [x] map
+	- [x] create
+	- [x] destroy
+	- [x] insert
+	- [x] remove
+	- [x] at
+	- [x] set compare function
 - [ ] dict
 - [ ] graph
 	- [x] create

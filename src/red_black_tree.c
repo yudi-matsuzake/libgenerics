@@ -75,6 +75,8 @@ gerror_t rbtree_create(rbtree_t* rbt, size_t member_size)
 	rbt->compare_argument = &(rbt->member_size);
 	rbt->root = NULL;
 
+	rbt->flags = G_RB_LEFT_LEANING;
+
 	return GERROR_OK;
 }
 
@@ -112,6 +114,8 @@ gerror_t rbtree_destroy (rbtree_t* rbt)
   * 			returns 0 if `a` is equal than `b`
   * 			return 1 if `a` is bigger than `b`
   * @param argument	pointer to the argument to the comparison function
+  *
+  * @see rbcomp_t
   *
   * @return	GERROR_OK in case of success operation;
   * 		GERROR_NULL_STRUCURE in case `t` is a NULL
@@ -154,13 +158,32 @@ gerror_t rbtree_add(rbtree_t* rbt, void* elem)
 
 		rbcomp_t result = rbt->compare(elem, node->data, rbt->compare_argument);
 
-		if( result == G_RB_FIRST_IS_GREATER ){
+		switch(result){
+		case G_RB_FIRST_IS_GREATER:
 			node = node->right;
 			c = RB_RIGHT;
-		}else{
+			break;
+		case G_RB_FIRST_IS_SMALLER:
 			node = node->left;
 			c = RB_LEFT;
+			break;
+		case G_RB_EQUAL:
+			if(rbt->flags & G_RB_EQUAL_OVERRIDE){
+				if(elem)
+					memcpy(node->data, elem, rbt->member_size);
+				return GERROR_OK;
+			}else if(rbt->flags & G_RB_LEFT_LEANING){
+				node = node->left;
+				c = RB_LEFT;
+			}else{
+				node = node->right;
+				c = RB_RIGHT;
+			}
+			break;
+		default:
+			return GERROR_COMPARE_FUNCTION_WRONG_RETURN;
 		}
+
 	}
 
 	/*
@@ -322,6 +345,26 @@ gerror_t rbtree_remove_node (rbtree_t* rbt, rbnode_t* node)
 	return GERROR_OK;
 }
 
+/** Set the flags of the rbtree.
+  * TODO: A more datailed description of rbtree_set_flags.
+  *
+  * @param rbt		previous allocated rbtree_t structure
+  * @param flags	flags to set the 
+  *
+  * @see	rbflag_t
+  *
+  * @return	GERROR_OK in case of sucess operation;
+  * 		GERROR_NULL_STRUCURE in case `rbt` is a NULL
+  */
+gerror_t rbtree_set_flags (redblacktree_t* rbt, long flags)
+{
+	if(!rbt) return GERROR_NULL_STRUCTURE;
+
+	rbt->flags = flags;
+
+	return GERROR_OK;
+}
+
 /** Find a node with the value pointed by `elem` and write the pointer to
   * `node`.
   *
@@ -349,16 +392,18 @@ gerror_t rbtree_find_node (rbtree_t* rbt, void* elem, rbnode_t** node)
 		rbcomp_t result = rbt->compare(elem, n->data, rbt->compare_argument);
 
 		switch(result){
-		case G_RB_EQUAL:
-			*node = n;
-			return GERROR_OK;
+		case G_RB_FIRST_IS_SMALLER:
+			n = n->left;
 			break;
 		case G_RB_FIRST_IS_GREATER:
 			n = n->right;
 			break;
-		case G_RB_FIRST_IS_SMALLER:
-			n = n->left;
+		case G_RB_EQUAL:
+			*node = n;
+			return GERROR_OK;
 			break;
+		default:
+			return GERROR_COMPARE_FUNCTION_WRONG_RETURN;
 		}
 	}
 

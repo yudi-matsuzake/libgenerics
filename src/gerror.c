@@ -33,6 +33,7 @@ char* gerror_to_string[GERROR_N_ERROR] = {
 	"Attempt to operate a function with a prohibitive null pointer element",
 	"Attempt to remove an element that is not in the structure",
 	"The pointer to the key cannot be null",
+	"Compare function return an unknown value",
 	"Element not found"
 };
 
