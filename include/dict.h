@@ -17,33 +17,23 @@
  * For more information, please refer to <http://unlicense.org/>
  */
 
-#ifndef __MAP_H__
-#define __MAP_H__
+#ifndef __DICT_H__
+#define __DICT_H__
 
-#include "red_black_tree.h"
 #include "gerror.h"
+#include "vector.h"
+#include "map.h"
+#include "string.h"
 
-typedef struct map_t {
-	size_t key_size;
+typedef struct dict_t {
 	size_t member_size;
+	map_t map;
+} dict_t;
 
-	redblacktree_t map;
-} map_t;
-
-gerror_t map_create(struct map_t* m, size_t key_size, size_t member_size);
-gerror_t map_destroy(struct map_t* m);
-gerror_t map_insert(struct map_t* m, void* key, void* elem);
-gerror_t map_remove(struct map_t* m, void* key, void* elem);
-gerror_t map_at(struct map_t* m, void* key, void* elem);
-gerror_t map_get_pair(
-		struct map_t* m,
-		void* key,
-		void* rkey,
-		void* relem);
-
-gerror_t map_set_compare_function(
-		struct map_t* m,
-		rbtree_compare_function compare_function,
-		void* arg);
+gerror_t dict_create(struct dict_t* d, size_t member_size);
+gerror_t dict_destroy(struct dict_t* d);
+gerror_t dict_insert(struct dict_t* d, const char* key, void* elem);
+gerror_t dict_remove(struct dict_t* d, const char* key, void* elem);
+gerror_t dict_at(struct dict_t* d, const char* key, void* elem);
 
 #endif

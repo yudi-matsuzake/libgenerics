@@ -140,6 +140,7 @@ gerror_t map_remove (struct map_t* m, void* key, void* elem)
   * @see
   *
   * @return	GERROR_OK in case of success
+  * 		GERROR_NULL_KEY in case that `key` is null
   */
 gerror_t map_at (struct map_t* m, void* key, void* elem)
 {
@@ -177,6 +178,42 @@ gerror_t map_set_compare_function (
 	if(!m) return GERROR_NULL_STRUCTURE;
 
 	return rbtree_set_compare_function(&m->map, compare_function, arg);
+}
+
+/** Get the pair key:value and write in memory pointed by
+  * `rkey` and `relem`.
+  * TODO: A more datailed description of map_get_pair.
+  *
+  * @param m		pointer to a previous allocated `map_t` structure;
+  * @param key		pointer to the key
+  * @param rkey		pointer to the memory location to write the key
+  * @param relem	pointer to the memory location to write the elem
+  *
+  * @return	GERROR_OK in case of success
+  * 		GERROR_NULL_KEY in case that `key` is null
+  */
+gerror_t map_get_pair (
+		struct map_t* m,
+		void* key,
+		void* rkey,
+		void* relem)
+{
+	if(!m) return GERROR_NULL_STRUCTURE;
+	if(!key) return GERROR_NULL_KEY;
+
+	rbnode_t* node;
+
+	gerror_t g = rbtree_find_node(&m->map, key, &node);
+	if(g != GERROR_OK)
+		return g;
+
+	if(rkey && node && node->data)
+		memcpy(rkey, node->data, m->key_size);
+
+	if(relem && node && node->data)
+		memcpy(relem, node->data + m->key_size, m->member_size);
+
+	return GERROR_OK;
 }
 
 /*

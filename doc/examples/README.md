@@ -45,3 +45,5 @@
 **map0.c** simple example of using map;
 
 **map1.c** example of using map with a custom compare function.
+
+**dict0.c** simple example of dict_t usage;

@@ -38,7 +38,12 @@
 	- [x] remove
 	- [x] at
 	- [x] set compare function
-- [ ] dict
+- [x] dict
+	- [x] create
+	- [x] destroy
+	- [x] insert
+	- [x] remove
+	- [x] at
 - [ ] graph
 	- [x] create
 	- [x] destroy
