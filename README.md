@@ -3,11 +3,7 @@ libgenerics
 
 libgenerics is a minimalistic and generic library for C basic data structures.
 
-The entire implementation was aimed at providing two _features_:
-
-1. fun;
-
-2. reusable, generic and easy-to-read code like this:
+The entire implementation was aimed at providing reusable, generic and easy-to-read code like this:
 
 ```c
 #include <stdio.h>
@@ -35,7 +31,7 @@ int main()
 }
 ```
 
-The doxygen documentation is available ![here](https://github.com/yudi-matsuzake/libgenerics/blob/master/doc/doc.pdf).
+The [doxygen](http://doxygen.org/) documentation is available [here](https://github.com/yudi-matsuzake/libgenerics/blob/master/doc/doc.pdf). There's only the pdf version pre-generated, but you can generate the html and the man format with [doxygen](http://doxygen.org/).
 
 Installation
 ------------

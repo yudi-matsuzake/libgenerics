@@ -1,5 +1,7 @@
 # Examples
 
+> Everybody loves examples
+
 **queue0.c** simple example of simple use of the queue\_t struct and your functions:
 
 **queue1.c** example of using multiple queues and multiples types, including a example with a struc;
