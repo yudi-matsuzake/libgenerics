@@ -20,17 +20,26 @@
 #ifndef __DICT_H__
 #define __DICT_H__
 
+#include <string.h>
+#include <strings.h>
+
 #include "gerror.h"
 #include "vector.h"
 #include "map.h"
-#include "string.h"
 
 typedef struct dict_t {
 	size_t member_size;
 	map_t map;
+
+	int (*strcomprfunction)(const char*, const char*);
 } dict_t;
 
-gerror_t dict_create(struct dict_t* d, size_t member_size);
+typedef enum dict_flags_t {
+	G_DICT_CASE_SENSITIVE = 0,
+	G_DICT_CASE_INSENSITIVE = 1
+} dict_flags_t;
+
+gerror_t dict_create(struct dict_t* d, size_t member_size, int flags);
 gerror_t dict_destroy(struct dict_t* d);
 gerror_t dict_insert(struct dict_t* d, const char* key, void* elem);
 gerror_t dict_remove(struct dict_t* d, const char* key, void* elem);

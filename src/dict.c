@@ -37,16 +37,22 @@ void dict_free_node(redblacknode_t* node);
   * 		GERROR_NULL_STRUCTURE in case the structure `d`
   * 		is pointed to null
   */
-gerror_t dict_create (struct dict_t* d, size_t member_size)
+gerror_t dict_create (struct dict_t* d, size_t member_size, int flags)
 {
 	if(!d) return GERROR_NULL_STRUCTURE;
 
 	d->member_size = member_size;
 	map_create(&d->map, sizeof(char*), d->member_size);
+
+	if(flags & G_DICT_CASE_INSENSITIVE)
+		d->strcomprfunction = strcasecmp;
+	else
+		d->strcomprfunction = strcmp;
+
 	map_set_compare_function(
 			&d->map,
 			compare_string_function,
-			NULL);
+			d->strcomprfunction);
 
 	return GERROR_OK;
 }
@@ -173,12 +179,13 @@ void dict_free_node(redblacknode_t* node)
  */
 int compare_string_function(void* a, void* b, void* arg)
 {
-	UNUSED(arg);
+
+	int (*strcompare)(const char*, const char*) = arg;
 
 	char* a_str = *(char**)a;
 	char* b_str = *(char**)b;
 
-	int r = strcmp(a_str, b_str);
+	int r = strcompare(a_str, b_str);
 	rbcomp_t result;
 
 	if(r < 0)

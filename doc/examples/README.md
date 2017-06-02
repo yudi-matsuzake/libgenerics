@@ -49,3 +49,7 @@
 **map1.c** example of using map with a custom compare function.
 
 **dict0.c** simple example of dict_t usage;
+
+**dict0.c** simple example of dict_t usage;
+
+**dict1.c** example of dict_t usage with case insensitive;
