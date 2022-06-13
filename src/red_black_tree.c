@@ -655,7 +655,7 @@ rbnode_t* create_node(rbtree_t* rbt, void* elem)
 	node->data	= NULL;
 
 	if( rbt->member_size && elem ){
-		node->data = (void*) malloc( sizeof(rbt->member_size) );
+		node->data = (void*) malloc(rbt->member_size);
 		memcpy(node->data, elem, rbt->member_size);
 	}
 
