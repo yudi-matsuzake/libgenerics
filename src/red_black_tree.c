@@ -29,11 +29,11 @@ rbnode_t* rbnode_destroy(rbnode_t* node);
 /*
  * auxiliar function prototypes to insert
  */
-void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node);
-void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l);
-rbnode_t* create_node(rbtree_t* rbt, void* elem);
-void left_rotate(rbtree_t* rbt, rbnode_t* node);
-void right_rotate(rbtree_t* rbt, rbnode_t* node);
+static void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node);
+static void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l);
+static rbnode_t* create_node(rbtree_t* rbt, void* elem);
+static void left_rotate(rbtree_t* rbt, rbnode_t* node);
+static void right_rotate(rbtree_t* rbt, rbnode_t* node);
 
 /*
  * auxiliar function prototypes to delete
@@ -554,7 +554,7 @@ gerror_t rbtree_max_value (rbtree_t* rbt, void* elem)
 /*
  * Classic red n black insert fixup function
  */
-void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node)
+static void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node)
 {
 	while( node->parent != NULL && node->parent->color == G_RB_RED ){
 
@@ -595,7 +595,7 @@ void rbtree_insert_fixup(rbtree_t* rbt, rbnode_t* node)
  * receives a rbtree, a node and a case `c` and fix
  * the case `c`. `l` is whether the father is the left child
  */
-void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l)
+static void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int l)
 {
 	switch(c){
 	/*
@@ -644,7 +644,7 @@ void fix_insert_case(rbtree_t* rbt, rbnode_t** node, rbnode_t* uncle, int c, int
 /*
  * allocates and create a node
  */
-rbnode_t* create_node(rbtree_t* rbt, void* elem)
+static rbnode_t* create_node(rbtree_t* rbt, void* elem)
 {
 	rbnode_t* node = (rbnode_t*) malloc( sizeof(rbnode_t) );
 
@@ -667,7 +667,7 @@ rbnode_t* create_node(rbtree_t* rbt, void* elem)
  * performs the left rotation. This is the classical binary
  * search tree left rotation function.
  */
-void left_rotate(rbtree_t* rbt, rbnode_t* node)
+static void left_rotate(rbtree_t* rbt, rbnode_t* node)
 {
 
 	rbnode_t* temp_node = node->right;
@@ -698,7 +698,7 @@ void left_rotate(rbtree_t* rbt, rbnode_t* node)
  * performs the right rotation. This is the classical binary
  * search tree right rotation function.
  */
-void right_rotate(rbtree_t* rbt, rbnode_t* node)
+static void right_rotate(rbtree_t* rbt, rbnode_t* node)
 {
 
 	rbnode_t* temp_node = node->left;

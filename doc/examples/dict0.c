@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <generics/dict.h>
+#include "generics/dict.h"
 
 int main()
 {

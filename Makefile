@@ -6,7 +6,7 @@ GCC_FLAGS=-ansi -Wall -Wextra -O3
 # paths and files
 BUILD_PATH=build
 LIB_PATH=$(BUILD_PATH)/lib
-INCLUDE=include
+INCLUDE=include/generics
 SRC_PATH=src
 SRC=$(wildcard $(SRC_PATH)/*.c)
 HEADER=$(wildcard $(INCLUDE)/*.h)
@@ -23,7 +23,7 @@ LIB_SHARED=$(LIB_SHARED_PATH)/libgenerics.so
 # installation
 LIB_STATIC_INSTALL=/usr/lib/libgenerics.a
 LIB_SHARED_INSTALL=/usr/lib/libgenerics.so
-HEADER_INSTALL=/usr/include/generics
+HEADER_INSTALL=/usr/include
 
 # example
 EXAMPLE_PATH=doc/examples
