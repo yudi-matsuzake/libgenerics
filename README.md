@@ -44,7 +44,7 @@ $ sudo make install
 To make sure everything went well you may compile the examples:
 
 ```
-$ make build/examples
+$ make examples
 ```
 
 You can copy the code above to a file name `main.c` and compile after the installation using:
